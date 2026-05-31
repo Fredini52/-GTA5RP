@@ -69,7 +69,8 @@
 
         textarea {
             resize: vertical;
-            min-height: 70px;
+            min-height: 45px;
+            max-height: 120px;
         }
 
         input:focus, textarea:focus {
@@ -298,9 +299,9 @@
     <h1>⌨️ GTA 5 RP Калькулятор</h1>
     <div class="sub">by Fredorkom</div>
 
-    <!-- НОВОЕ ПОЛЕ: НАЗВАНИЕ ТОВАРА -->
+    <!-- ПОЛЕ ДЛЯ НАЗВАНИЯ ТОВАРА - ИСПРАВЛЕНО -->
     <label><i class="fas fa-tag"></i> Название товара / сделки:</label>
-    <textarea id="itemName" placeholder="Пример: Броневик / Оружие / Наркотики / Техника ..." rows="1"></textarea>
+    <textarea id="itemName" placeholder="Пример: Броневик, Оружие, Наркотики, Техника..." style="min-height: 45px;"></textarea>
 
     <label><i class="fas fa-dollar-sign"></i> Цена покупки ($):</label>
     <input type="number" id="buyPrice" placeholder="10000" value="10000">
@@ -321,7 +322,7 @@
         <p id="resultValue">—</p>
     </div>
 
-    <!-- БЛОК ИСТОРИИ РАСЧЕТОВ -->
+    <!-- БЛОК ИСТОРИИ -->
     <div class="history-section">
         <div class="history-header">
             <h3><i class="fas fa-clock"></i> История расчетов</h3>
@@ -331,11 +332,11 @@
             <div class="empty-history">✨ Здесь будут сохранены все расчеты. Нажми «Рассчитать»!</div>
         </div>
     </div>
-    <footer>🔊 каждый клик — звук механической клавиатуры | каждое нажатие "Рассчитать" — реалистичный энтер</footer>
+    <footer>🔊 каждый клик — звук механической клавиатуры</footer>
 </div>
 
 <script>
-    // ---------------------- ЗВУКОВАЯ СИСТЕМА (механическая клавиатура) -------------------------
+    // ---------------------- ЗВУКОВАЯ СИСТЕМА -------------------------
     let audioCtx = null;
     
     function playKeyboardSound() {
@@ -347,7 +348,6 @@
                 audioCtx.resume();
             }
             const now = audioCtx.currentTime;
-            // основной клик
             const clickOsc = audioCtx.createOscillator();
             const clickGain = audioCtx.createGain();
             clickOsc.connect(clickGain);
@@ -357,7 +357,7 @@
             clickOsc.start();
             clickGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.03);
             clickOsc.stop(now + 0.03);
-            // низкий удар
+            
             const thudOsc = audioCtx.createOscillator();
             const thudGain = audioCtx.createGain();
             thudOsc.connect(thudGain);
@@ -368,7 +368,7 @@
             thudOsc.start();
             thudGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.05);
             thudOsc.stop(now + 0.05);
-            // резонанс
+            
             const pingOsc = audioCtx.createOscillator();
             const pingGain = audioCtx.createGain();
             pingOsc.connect(pingGain);
@@ -400,6 +400,7 @@
             enterOsc.start();
             enterGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.06);
             enterOsc.stop(now + 0.06);
+            
             const enterThud = audioCtx.createOscillator();
             const enterThudGain = audioCtx.createGain();
             enterThud.connect(enterThudGain);
@@ -413,20 +414,26 @@
         } catch(e) {}
     }
     
-    // Звуки на ввод и клики по полям
-    const allInputs = document.querySelectorAll('input, textarea');
+    // Звуки на ввод (кроме textarea, чтобы не мешать печатать, но добавим легкий звук при фокусе)
+    const allInputs = document.querySelectorAll('input');
     allInputs.forEach(el => {
         el.addEventListener('input', () => playKeyboardSound());
         el.addEventListener('click', () => playKeyboardSound());
     });
     
-    const calcBtn = document.querySelector('button');
-    calcBtn.addEventListener('click', () => {
+    // Для textarea - только клик для фокуса, без звука при каждом символе, чтобы не бесить
+    const itemNameField = document.getElementById('itemName');
+    if (itemNameField) {
+        itemNameField.addEventListener('click', () => playKeyboardSound());
+        // не добавляем input звук, чтобы при печати не отвлекало
+    }
+    
+    const calcButton = document.querySelector('button');
+    calcButton.addEventListener('click', () => {
         playEnterSound();
         if (navigator.vibrate) navigator.vibrate(20);
     });
     
-    // Активация аудио после первого клика
     document.body.addEventListener('click', function initAudio() {
         if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume();
@@ -435,9 +442,9 @@
         document.body.removeEventListener('click', initAudio);
     });
     
-    // ---------------------- ИСТОРИЯ РАСЧЕТОВ (localStorage) -------------------------
+    // ---------------------- ИСТОРИЯ -------------------------
     let historyArray = [];   
-    const STORAGE_KEY = "gta_rp_calc_history_v2";   // обновим ключ, чтобы не конфликтовать со старой структурой (добавилось название товара)
+    const STORAGE_KEY = "gta_rp_calc_history_v3";
     
     function loadHistoryFromStorage() {
         const stored = localStorage.getItem(STORAGE_KEY);
@@ -445,7 +452,6 @@
             try {
                 historyArray = JSON.parse(stored);
                 if (!Array.isArray(historyArray)) historyArray = [];
-                // Небольшая миграция: если у старых записей нет поля itemName, добавим пустую строку
                 historyArray = historyArray.map(record => {
                     if (record.itemName === undefined) record.itemName = "";
                     return record;
@@ -461,11 +467,9 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(historyArray));
     }
     
-    // Добавить новую запись с названием товара
     function addHistoryRecord(itemName, buy, sell, taxPercent, expenses, profit, profitRaw) {
         const now = new Date();
         const timeString = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        // очистим название: если пустое, то ставим стандартную метку
         let finalName = itemName.trim();
         if (finalName === "") finalName = "Без названия";
         
@@ -501,6 +505,16 @@
         playKeyboardSound();
     }
     
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
     function renderHistoryList() {
         const container = document.getElementById('historyList');
         if (!container) return;
@@ -518,8 +532,6 @@
             const profitAbs = Math.abs(profitValue).toFixed(2);
             const profitFormatted = `${profitSign} $${profitAbs}`;
             const borderColor = isPositive ? '#6fcf97' : '#e06c75';
-            
-            // Защита от отсутствия itemName (на всякий случай)
             const displayName = record.itemName || "Без названия";
             
             html += `
@@ -554,24 +566,9 @@
         });
     }
     
-    // Простейшая защита от XSS через название товара
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
-    }
-    
-    // ---------------------- ОСНОВНАЯ ФУНКЦИЯ РАСЧЁТА -------------------------
+    // ---------------------- ОСНОВНОЙ РАСЧЁТ -------------------------
     function calculate() {
-        // Получаем название товара
         let itemName = document.getElementById('itemName').value || "";
-        
         let buy = parseFloat(document.getElementById('buyPrice').value) || 0;
         let sell = parseFloat(document.getElementById('sellPrice').value) || 0;
         let tax = parseFloat(document.getElementById('tax').value) || 0;
@@ -581,7 +578,6 @@
         let taxAmount = profitBeforeTax * (tax / 100);
         let finalProfit = profitBeforeTax - taxAmount;
         
-        // Обновляем блок результата
         let resultElement = document.getElementById('resultValue');
         if (finalProfit >= 0) {
             resultElement.innerHTML = `+ $${finalProfit.toFixed(2)}`;
@@ -591,16 +587,13 @@
             resultElement.style.color = "#e06c75";
         }
         
-        // Анимация
         let block = document.getElementById('resultBlock');
         block.style.transform = "scale(1.02)";
         setTimeout(() => block.style.transform = "scale(1)", 150);
         
-        // Добавляем в историю с названием товара
         addHistoryRecord(itemName, buy, sell, tax, expenses, finalProfit, profitBeforeTax);
     }
     
-    // Кнопка очистки истории
     document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
         if (confirm('🗑️ Очистить всю историю расчетов?')) {
             clearHistory();
@@ -610,12 +603,11 @@
         }
     });
     
-    // Загрузка истории из localStorage
     loadHistoryFromStorage();
     
-    // Обработка нажатия Enter на полях для удобного расчета
-    const calcInputFields = ['itemName', 'buyPrice', 'sellPrice', 'tax', 'expenses'];
-    calcInputFields.forEach(id => {
+    // Enter на полях (кроме textarea - там Enter для переноса строки)
+    const numberFields = ['buyPrice', 'sellPrice', 'tax', 'expenses'];
+    numberFields.forEach(id => {
         const field = document.getElementById(id);
         if (field) {
             field.addEventListener('keypress', (e) => {
@@ -628,11 +620,9 @@
         }
     });
     
-    // Для textarea Enter не должен вызывать расчет автоматически (перенос строки), но если нажат Ctrl+Enter - тоже удобно, 
-    // добавим поддержку Ctrl+Enter в textarea
-    const textareaItem = document.getElementById('itemName');
-    if (textareaItem) {
-        textareaItem.addEventListener('keydown', (e) => {
+    // Для textarea: Ctrl+Enter = расчет
+    if (itemNameField) {
+        itemNameField.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();
                 calculate();
@@ -641,16 +631,10 @@
         });
     }
     
-    // Добавим демо-записи только при абсолютно пустой истории (для первого запуска красиво)
+    // Демо-записи при пустой истории
     if (historyArray.length === 0) {
-        // Создаем пару примеров с названиями товаров, чтобы пользователь сразу видел функционал
         const demoDate = new Date();
         const demoTime = `${demoDate.toLocaleDateString()} ${demoDate.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        
-        const demo1ProfitRaw = 27800 - 12500 - 350;
-        const demo1Profit = demo1ProfitRaw - (demo1ProfitRaw * 8/100);
-        const demo2ProfitRaw = 38000 - 45000 - 2200;
-        const demo2Profit = demo2ProfitRaw - (demo2ProfitRaw * 15/100);
         
         const demoRecords = [
             {
@@ -660,8 +644,8 @@
                 sell: 27800,
                 tax: 8,
                 expenses: 350,
-                profit: demo1Profit,
-                profitRaw: demo1ProfitRaw,
+                profit: (27800-12500-350) * (1 - 8/100),
+                profitRaw: 27800-12500-350,
                 time: demoTime,
                 timestamp: Date.now() - 3600000
             },
@@ -672,8 +656,8 @@
                 sell: 38000,
                 tax: 15,
                 expenses: 2200,
-                profit: demo2Profit,
-                profitRaw: demo2ProfitRaw,
+                profit: (38000-45000-2200) * (1 - 15/100),
+                profitRaw: 38000-45000-2200,
                 time: demoTime,
                 timestamp: Date.now() - 7200000
             },
