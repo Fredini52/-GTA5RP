@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>GTA 5 RP Калькулятор</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0b1120, #19233c);
+            font-family: 'Segoe UI', system-ui;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(18, 25, 45, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 30px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.2);
+        }
+
+        h1 {
+            color: #ffd966;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .sub {
+            text-align: center;
+            color: #8e9aaf;
+            margin-bottom: 25px;
+            font-size: 14px;
+            border-bottom: 1px solid #2a3450;
+            padding-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 5px 0;
+            color: #cbd5ff;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0f1422;
+            border: 1px solid #2a3450;
+            border-radius: 20px;
+            color: white;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #ffb347;
+            outline: none;
+            box-shadow: 0 0 0 2px #ffb34755;
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(95deg, #ff9a2e, #ff5e00);
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            margin: 25px 0 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px #ff9a2eaa;
+        }
+
+        .result {
+            background: #0a0f1ccc;
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #ffb347;
+            margin-top: 10px;
+        }
+
+        .result p {
+            color: #ffd966;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .result span {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* Опционально: визуальный эффект при нажатии */
+        input:active {
+            transform: scale(0.99);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⌨️ GTA 5 RP Калькулятор</h1>
+    <div class="sub">by Fredorkom | механический звук клавиатуры</div>
+
+    <label><i class="fas fa-dollar-sign"></i> Цена покупки ($):</label>
+    <input type="number" id="buyPrice" placeholder="10000">
+
+    <label><i class="fas fa-chart-line"></i> Цена продажи ($):</label>
+    <input type="number" id="sellPrice" placeholder="25000">
+
+    <label><i class="fas fa-percent"></i> Налог (%):</label>
+    <input type="number" id="tax" placeholder="10">
+
+    <label><i class="fas fa-receipt"></i> Расходы ($):</label>
+    <input type="number" id="expenses" placeholder="0">
+
+    <button onclick="calculate()">📊 Рассчитать</button>
+
+    <div class="result" id="resultBlock">
+        <span>💰 Чистая прибыль:</span>
+        <p id="resultValue">—</p>
+    </div>
+</div>
+
+<script>
+    // --- ЗВУК НАСТОЯЩЕЙ МЕХАНИЧЕСКОЙ КЛАВИАТУРЫ ---
+    
+    let audioCtx = null;
+    
+    // Функция генерации звука клавиши (как Cherry MX)
+    function playKeyboardSound() {
+        try {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            const now = audioCtx.currentTime;
+            
+            // ОСНОВНОЙ КЛИК (громкий и резкий, как у механической клавиатуры)
+            const clickOsc = audioCtx.createOscillator();
+            const clickGain = audioCtx.createGain();
+            clickOsc.connect(clickGain);
+            clickGain.connect(audioCtx.destination);
+            
+            clickOsc.frequency.value = 1800;  // высокая частота для "клика"
+            clickGain.gain.value = 0.25;
+            
+            clickOsc.start();
+            clickGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.03);
+            clickOsc.stop(now + 0.03);
+            
+            // НИЗКОЧАСТОТНЫЙ "УДАР" (звук нажатия на переключатель)
+            const thudOsc = audioCtx.createOscillator();
+            const thudGain = audioCtx.createGain();
+            thudOsc.connect(thudGain);
+            thudGain.connect(audioCtx.destination);
+            
+            thudOsc.frequency.value = 180;  // низкая частота для "удара"
+            thudOsc.type = 'sine';
+            thudGain.gain.value = 0.12;
+            
+            thudOsc.start();
+            thudGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.05);
+            thudOsc.stop(now + 0.05);
+            
+            // МАЛЕНЬКИЙ "РЕЗОНАНС" (как звук пружинки)
+            const pingOsc = audioCtx.createOscillator();
+            const pingGain = audioCtx.createGain();
+            pingOsc.connect(pingGain);
+            pingGain.connect(audioCtx.destination);
+            
+            pingOsc.frequency.value = 3200;
+            pingOsc.type = 'sine';
+            pingGain.gain.value = 0.06;
+            
+            pingOsc.start();
+            pingGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.02);
+            pingOsc.stop(now + 0.02);
+            
+        } catch(e) {
+            // тихо падаем, если звук не работает
+        }
+    }
+    
+    // Дополнительный звук для ENTER / нажатия кнопки (тяжелее)
+    function playEnterSound() {
+        try {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            const now = audioCtx.currentTime;
+            
+            // Более тяжёлый звук для большой клавиши Enter
+            const enterOsc = audioCtx.createOscillator();
+            const enterGain = audioCtx.createGain();
+            enterOsc.connect(enterGain);
+            enterGain.connect(audioCtx.destination);
+            
+            enterOsc.frequency.value = 1400;
+            enterGain.gain.value = 0.3;
+            
+            enterOsc.start();
+            enterGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.06);
+            enterOsc.stop(now + 0.06);
+            
+            // Добавляем низкий "стук"
+            const enterThud = audioCtx.createOscillator();
+            const enterThudGain = audioCtx.createGain();
+            enterThud.connect(enterThudGain);
+            enterThudGain.connect(audioCtx.destination);
+            
+            enterThud.frequency.value = 120;
+            enterThud.type = 'sine';
+            enterThudGain.gain.value = 0.15;
+            
+            enterThud.start();
+            enterThudGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.08);
+            enterThud.stop(now + 0.08);
+            
+        } catch(e) {}
+    }
+    
+    // Навешиваем звук на все поля ввода (каждый символ как нажатие клавиши)
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            playKeyboardSound();
+        });
+        // Дополнительно при клике на поле (фокус)
+        input.addEventListener('click', function() {
+            playKeyboardSound();
+        });
+    });
+    
+    // Звук на кнопку "Рассчитать" (как Enter)
+    const calcButton = document.querySelector('button');
+    calcButton.addEventListener('click', function() {
+        playEnterSound();
+        // Небольшая вибрация для полного эффекта (если устройство поддерживает)
+        if (navigator.vibrate) {
+            navigator.vibrate(20);
+        }
+    });
+    
+    // Функция расчёта (без изменений)
+    function calculate() {
+        let buy = parseFloat(document.getElementById('buyPrice').value) || 0;
+        let sell = parseFloat(document.getElementById('sellPrice').value) || 0;
+        let tax = parseFloat(document.getElementById('tax').value) || 0;
+        let expenses = parseFloat(document.getElementById('expenses').value) || 0;
+
+        let profitBeforeTax = sell - buy - expenses;
+        let taxAmount = profitBeforeTax * (tax / 100);
+        let finalProfit = profitBeforeTax - taxAmount;
+
+        let resultElement = document.getElementById('resultValue');
+
+        if (finalProfit >= 0) {
+            resultElement.innerHTML = `+ $${finalProfit.toFixed(2)}`;
+            resultElement.style.color = "#6fcf97";
+        } else {
+            resultElement.innerHTML = `- $${Math.abs(finalProfit).toFixed(2)}`;
+            resultElement.style.color = "#e06c75";
+        }
+
+        let block = document.getElementById('resultBlock');
+        block.style.transform = "scale(1.02)";
+        setTimeout(() => block.style.transform = "scale(1)", 150);
+    }
+    
+    // Активация звука после первого клика по странице
+    document.body.addEventListener('click', function initAudio() {
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        // Небольшой тестовый звук, чтобы пользователь понял, что звук работает
+        setTimeout(() => {
+            playKeyboardSound();
+        }, 100);
+        document.body.removeEventListener('click', initAudio);
+    });
+</script>
+</body>
+</html>
