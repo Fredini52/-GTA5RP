@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>GTA 5 RP Калькулятор</title>
+    <title>GTA 5 RP Калькулятор — Название товара + история</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -26,9 +26,10 @@
             backdrop-filter: blur(12px);
             border-radius: 40px;
             padding: 30px;
-            max-width: 480px;
+            max-width: 620px;
             width: 100%;
             box-shadow: 0 20px 35px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.2);
+            transition: all 0.2s ease;
         }
 
         h1 {
@@ -54,7 +55,7 @@
             font-weight: 500;
         }
 
-        input {
+        input, textarea {
             width: 100%;
             padding: 12px 16px;
             background: #0f1422;
@@ -63,9 +64,15 @@
             color: white;
             font-size: 16px;
             transition: 0.2s;
+            font-family: inherit;
         }
 
-        input:focus {
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        input:focus, textarea:focus {
             border-color: #ffb347;
             outline: none;
             box-shadow: 0 0 0 2px #ffb34755;
@@ -97,6 +104,7 @@
             text-align: center;
             border-left: 4px solid #ffb347;
             margin-top: 10px;
+            transition: transform 0.1s ease;
         }
 
         .result p {
@@ -110,179 +118,471 @@
             color: #aaa;
         }
 
-        /* Опционально: визуальный эффект при нажатии */
-        input:active {
-            transform: scale(0.99);
+        .history-section {
+            margin-top: 30px;
+            background: rgba(10, 15, 28, 0.6);
+            border-radius: 28px;
+            padding: 10px 5px 15px 5px;
+            border: 1px solid #2a3450;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0 15px 10px 15px;
+            border-bottom: 1px solid #2a3450;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .history-header h3 {
+            color: #ffd966;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clear-btn {
+            background: rgba(220, 60, 60, 0.8);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 40px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            width: auto;
+            margin: 0;
+        }
+
+        .clear-btn:hover {
+            background: #e05a5a;
+            transform: scale(1.02);
+            box-shadow: none;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 5px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            background: #0f1422cc;
+            border-radius: 20px;
+            padding: 12px 15px;
+            backdrop-filter: blur(4px);
+            border-left: 4px solid;
+            transition: 0.1s;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .history-item-name {
+            font-weight: bold;
+            color: #ffd966;
+            background: #00000040;
+            padding: 3px 12px;
+            border-radius: 40px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: baseline;
+            font-size: 12px;
+            color: #b9c3e6;
+        }
+
+        .history-details span {
+            font-family: monospace;
+            background: #00000033;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .history-profit {
+            font-weight: bold;
+            font-size: 16px;
+            background: #00000055;
+            padding: 2px 12px;
+            border-radius: 40px;
+            letter-spacing: 0.5px;
+        }
+
+        .history-time {
+            font-size: 10px;
+            color: #7a85a1;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 30px 20px;
+            color: #8e9aaf;
+            font-style: italic;
+        }
+
+        .delete-item-btn {
+            background: none;
+            border: none;
+            color: #ff8c8c;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0;
+            padding: 5px;
+            width: auto;
+            transition: 0.1s;
+            border-radius: 30px;
+        }
+
+        .delete-item-btn:hover {
+            transform: scale(1.1);
+            color: #ff5e5e;
+            background: none;
+            box-shadow: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f1422;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ffb347;
+            border-radius: 10px;
+        }
+
+        .result p {
+            margin-top: 4px;
+        }
+
+        footer {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 18px;
+            color: #5b6885;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>⌨️ GTA 5 RP Калькулятор</h1>
-    <div class="sub">by Fredorkom | механический звук клавиатуры</div>
+    <div class="sub">by Fredorkom</div>
+
+    <!-- НОВОЕ ПОЛЕ: НАЗВАНИЕ ТОВАРА -->
+    <label><i class="fas fa-tag"></i> Название товара / сделки:</label>
+    <textarea id="itemName" placeholder="Пример: Броневик / Оружие / Наркотики / Техника ..." rows="1"></textarea>
 
     <label><i class="fas fa-dollar-sign"></i> Цена покупки ($):</label>
-    <input type="number" id="buyPrice" placeholder="10000">
+    <input type="number" id="buyPrice" placeholder="10000" value="10000">
 
     <label><i class="fas fa-chart-line"></i> Цена продажи ($):</label>
-    <input type="number" id="sellPrice" placeholder="25000">
+    <input type="number" id="sellPrice" placeholder="25000" value="25000">
 
     <label><i class="fas fa-percent"></i> Налог (%):</label>
-    <input type="number" id="tax" placeholder="10">
+    <input type="number" id="tax" placeholder="10" value="10">
 
     <label><i class="fas fa-receipt"></i> Расходы ($):</label>
-    <input type="number" id="expenses" placeholder="0">
+    <input type="number" id="expenses" placeholder="0" value="0">
 
-    <button onclick="calculate()">📊 Рассчитать</button>
+    <button onclick="calculate()">📊 Рассчитать и сохранить</button>
 
     <div class="result" id="resultBlock">
         <span>💰 Чистая прибыль:</span>
         <p id="resultValue">—</p>
     </div>
+
+    <!-- БЛОК ИСТОРИИ РАСЧЕТОВ -->
+    <div class="history-section">
+        <div class="history-header">
+            <h3><i class="fas fa-clock"></i> История расчетов</h3>
+            <button class="clear-btn" id="clearHistoryBtn"><i class="fas fa-trash-alt"></i> Очистить всё</button>
+        </div>
+        <div id="historyList" class="history-list">
+            <div class="empty-history">✨ Здесь будут сохранены все расчеты. Нажми «Рассчитать»!</div>
+        </div>
+    </div>
+    <footer>🔊 каждый клик — звук механической клавиатуры | каждое нажатие "Рассчитать" — реалистичный энтер</footer>
 </div>
 
 <script>
-    // --- ЗВУК НАСТОЯЩЕЙ МЕХАНИЧЕСКОЙ КЛАВИАТУРЫ ---
-    
+    // ---------------------- ЗВУКОВАЯ СИСТЕМА (механическая клавиатура) -------------------------
     let audioCtx = null;
     
-    // Функция генерации звука клавиши (как Cherry MX)
     function playKeyboardSound() {
         try {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
-            
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            
             const now = audioCtx.currentTime;
-            
-            // ОСНОВНОЙ КЛИК (громкий и резкий, как у механической клавиатуры)
+            // основной клик
             const clickOsc = audioCtx.createOscillator();
             const clickGain = audioCtx.createGain();
             clickOsc.connect(clickGain);
             clickGain.connect(audioCtx.destination);
-            
-            clickOsc.frequency.value = 1800;  // высокая частота для "клика"
+            clickOsc.frequency.value = 1800;
             clickGain.gain.value = 0.25;
-            
             clickOsc.start();
             clickGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.03);
             clickOsc.stop(now + 0.03);
-            
-            // НИЗКОЧАСТОТНЫЙ "УДАР" (звук нажатия на переключатель)
+            // низкий удар
             const thudOsc = audioCtx.createOscillator();
             const thudGain = audioCtx.createGain();
             thudOsc.connect(thudGain);
             thudGain.connect(audioCtx.destination);
-            
-            thudOsc.frequency.value = 180;  // низкая частота для "удара"
+            thudOsc.frequency.value = 180;
             thudOsc.type = 'sine';
             thudGain.gain.value = 0.12;
-            
             thudOsc.start();
             thudGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.05);
             thudOsc.stop(now + 0.05);
-            
-            // МАЛЕНЬКИЙ "РЕЗОНАНС" (как звук пружинки)
+            // резонанс
             const pingOsc = audioCtx.createOscillator();
             const pingGain = audioCtx.createGain();
             pingOsc.connect(pingGain);
             pingGain.connect(audioCtx.destination);
-            
             pingOsc.frequency.value = 3200;
             pingOsc.type = 'sine';
             pingGain.gain.value = 0.06;
-            
             pingOsc.start();
             pingGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.02);
             pingOsc.stop(now + 0.02);
-            
-        } catch(e) {
-            // тихо падаем, если звук не работает
-        }
+        } catch(e) {}
     }
     
-    // Дополнительный звук для ENTER / нажатия кнопки (тяжелее)
     function playEnterSound() {
         try {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
-            
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            
             const now = audioCtx.currentTime;
-            
-            // Более тяжёлый звук для большой клавиши Enter
             const enterOsc = audioCtx.createOscillator();
             const enterGain = audioCtx.createGain();
             enterOsc.connect(enterGain);
             enterGain.connect(audioCtx.destination);
-            
             enterOsc.frequency.value = 1400;
             enterGain.gain.value = 0.3;
-            
             enterOsc.start();
             enterGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.06);
             enterOsc.stop(now + 0.06);
-            
-            // Добавляем низкий "стук"
             const enterThud = audioCtx.createOscillator();
             const enterThudGain = audioCtx.createGain();
             enterThud.connect(enterThudGain);
             enterThudGain.connect(audioCtx.destination);
-            
             enterThud.frequency.value = 120;
             enterThud.type = 'sine';
             enterThudGain.gain.value = 0.15;
-            
             enterThud.start();
             enterThudGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.08);
             enterThud.stop(now + 0.08);
-            
         } catch(e) {}
     }
     
-    // Навешиваем звук на все поля ввода (каждый символ как нажатие клавиши)
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(input => {
-        input.addEventListener('input', function(e) {
-            playKeyboardSound();
-        });
-        // Дополнительно при клике на поле (фокус)
-        input.addEventListener('click', function() {
-            playKeyboardSound();
-        });
+    // Звуки на ввод и клики по полям
+    const allInputs = document.querySelectorAll('input, textarea');
+    allInputs.forEach(el => {
+        el.addEventListener('input', () => playKeyboardSound());
+        el.addEventListener('click', () => playKeyboardSound());
     });
     
-    // Звук на кнопку "Рассчитать" (как Enter)
-    const calcButton = document.querySelector('button');
-    calcButton.addEventListener('click', function() {
+    const calcBtn = document.querySelector('button');
+    calcBtn.addEventListener('click', () => {
         playEnterSound();
-        // Небольшая вибрация для полного эффекта (если устройство поддерживает)
-        if (navigator.vibrate) {
-            navigator.vibrate(20);
-        }
+        if (navigator.vibrate) navigator.vibrate(20);
     });
     
-    // Функция расчёта (без изменений)
+    // Активация аудио после первого клика
+    document.body.addEventListener('click', function initAudio() {
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        setTimeout(() => playKeyboardSound(), 80);
+        document.body.removeEventListener('click', initAudio);
+    });
+    
+    // ---------------------- ИСТОРИЯ РАСЧЕТОВ (localStorage) -------------------------
+    let historyArray = [];   
+    const STORAGE_KEY = "gta_rp_calc_history_v2";   // обновим ключ, чтобы не конфликтовать со старой структурой (добавилось название товара)
+    
+    function loadHistoryFromStorage() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                historyArray = JSON.parse(stored);
+                if (!Array.isArray(historyArray)) historyArray = [];
+                // Небольшая миграция: если у старых записей нет поля itemName, добавим пустую строку
+                historyArray = historyArray.map(record => {
+                    if (record.itemName === undefined) record.itemName = "";
+                    return record;
+                });
+            } catch(e) { historyArray = []; }
+        } else {
+            historyArray = [];
+        }
+        renderHistoryList();
+    }
+    
+    function saveHistoryToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(historyArray));
+    }
+    
+    // Добавить новую запись с названием товара
+    function addHistoryRecord(itemName, buy, sell, taxPercent, expenses, profit, profitRaw) {
+        const now = new Date();
+        const timeString = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+        // очистим название: если пустое, то ставим стандартную метку
+        let finalName = itemName.trim();
+        if (finalName === "") finalName = "Без названия";
+        
+        const record = {
+            id: Date.now() + Math.random() * 10000,
+            itemName: finalName,
+            buy: buy,
+            sell: sell,
+            tax: taxPercent,
+            expenses: expenses,
+            profit: profit,
+            profitRaw: profitRaw,
+            time: timeString,
+            timestamp: now.getTime()
+        };
+        historyArray.unshift(record);   
+        if (historyArray.length > 45) historyArray.pop();
+        saveHistoryToStorage();
+        renderHistoryList();
+    }
+    
+    function clearHistory() {
+        historyArray = [];
+        saveHistoryToStorage();
+        renderHistoryList();
+        playKeyboardSound();
+    }
+    
+    function deleteHistoryItem(id) {
+        historyArray = historyArray.filter(item => item.id !== id);
+        saveHistoryToStorage();
+        renderHistoryList();
+        playKeyboardSound();
+    }
+    
+    function renderHistoryList() {
+        const container = document.getElementById('historyList');
+        if (!container) return;
+        if (historyArray.length === 0) {
+            container.innerHTML = `<div class="empty-history"><i class="fas fa-database"></i> История пуста. Сделайте новый расчет!</div>`;
+            return;
+        }
+        
+        let html = '';
+        for (let record of historyArray) {
+            const profitValue = record.profit;
+            const isPositive = profitValue >= 0;
+            const profitSign = isPositive ? '+' : '−';
+            const profitColor = isPositive ? '#6fcf97' : '#e06c75';
+            const profitAbs = Math.abs(profitValue).toFixed(2);
+            const profitFormatted = `${profitSign} $${profitAbs}`;
+            const borderColor = isPositive ? '#6fcf97' : '#e06c75';
+            
+            // Защита от отсутствия itemName (на всякий случай)
+            const displayName = record.itemName || "Без названия";
+            
+            html += `
+                <div class="history-item" style="border-left-color: ${borderColor};">
+                    <div class="history-main">
+                        <div class="history-item-name">
+                            <i class="fas fa-cube"></i> ${escapeHtml(displayName)}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="history-profit" style="color: ${profitColor};">${profitFormatted}</div>
+                            <button class="delete-item-btn" data-id="${record.id}" title="Удалить запись"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="history-details">
+                        <span><i class="fas fa-shopping-cart"></i> ${record.buy.toFixed(2)}$</span>
+                        <span><i class="fas fa-arrow-right"></i> ${record.sell.toFixed(2)}$</span>
+                        <span><i class="fas fa-percent"></i> ${record.tax}%</span>
+                        <span><i class="fas fa-tools"></i> ${record.expenses.toFixed(2)}$</span>
+                        <span class="history-time"><i class="far fa-clock"></i> ${record.time}</span>
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+        
+        document.querySelectorAll('.delete-item-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseFloat(btn.getAttribute('data-id'));
+                if (!isNaN(id)) deleteHistoryItem(id);
+            });
+        });
+    }
+    
+    // Простейшая защита от XSS через название товара
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+    
+    // ---------------------- ОСНОВНАЯ ФУНКЦИЯ РАСЧЁТА -------------------------
     function calculate() {
+        // Получаем название товара
+        let itemName = document.getElementById('itemName').value || "";
+        
         let buy = parseFloat(document.getElementById('buyPrice').value) || 0;
         let sell = parseFloat(document.getElementById('sellPrice').value) || 0;
         let tax = parseFloat(document.getElementById('tax').value) || 0;
         let expenses = parseFloat(document.getElementById('expenses').value) || 0;
-
+        
         let profitBeforeTax = sell - buy - expenses;
         let taxAmount = profitBeforeTax * (tax / 100);
         let finalProfit = profitBeforeTax - taxAmount;
-
+        
+        // Обновляем блок результата
         let resultElement = document.getElementById('resultValue');
-
         if (finalProfit >= 0) {
             resultElement.innerHTML = `+ $${finalProfit.toFixed(2)}`;
             resultElement.style.color = "#6fcf97";
@@ -290,23 +590,110 @@
             resultElement.innerHTML = `- $${Math.abs(finalProfit).toFixed(2)}`;
             resultElement.style.color = "#e06c75";
         }
-
+        
+        // Анимация
         let block = document.getElementById('resultBlock');
         block.style.transform = "scale(1.02)";
         setTimeout(() => block.style.transform = "scale(1)", 150);
+        
+        // Добавляем в историю с названием товара
+        addHistoryRecord(itemName, buy, sell, tax, expenses, finalProfit, profitBeforeTax);
     }
     
-    // Активация звука после первого клика по странице
-    document.body.addEventListener('click', function initAudio() {
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        // Небольшой тестовый звук, чтобы пользователь понял, что звук работает
-        setTimeout(() => {
+    // Кнопка очистки истории
+    document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
+        if (confirm('🗑️ Очистить всю историю расчетов?')) {
+            clearHistory();
+            playEnterSound();
+        } else {
             playKeyboardSound();
-        }, 100);
-        document.body.removeEventListener('click', initAudio);
+        }
     });
+    
+    // Загрузка истории из localStorage
+    loadHistoryFromStorage();
+    
+    // Обработка нажатия Enter на полях для удобного расчета
+    const calcInputFields = ['itemName', 'buyPrice', 'sellPrice', 'tax', 'expenses'];
+    calcInputFields.forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    calculate();
+                    playEnterSound();
+                }
+            });
+        }
+    });
+    
+    // Для textarea Enter не должен вызывать расчет автоматически (перенос строки), но если нажат Ctrl+Enter - тоже удобно, 
+    // добавим поддержку Ctrl+Enter в textarea
+    const textareaItem = document.getElementById('itemName');
+    if (textareaItem) {
+        textareaItem.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                calculate();
+                playEnterSound();
+            }
+        });
+    }
+    
+    // Добавим демо-записи только при абсолютно пустой истории (для первого запуска красиво)
+    if (historyArray.length === 0) {
+        // Создаем пару примеров с названиями товаров, чтобы пользователь сразу видел функционал
+        const demoDate = new Date();
+        const demoTime = `${demoDate.toLocaleDateString()} ${demoDate.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+        
+        const demo1ProfitRaw = 27800 - 12500 - 350;
+        const demo1Profit = demo1ProfitRaw - (demo1ProfitRaw * 8/100);
+        const demo2ProfitRaw = 38000 - 45000 - 2200;
+        const demo2Profit = demo2ProfitRaw - (demo2ProfitRaw * 15/100);
+        
+        const demoRecords = [
+            {
+                id: Date.now() + 1001,
+                itemName: "Бронеавтомобиль",
+                buy: 12500,
+                sell: 27800,
+                tax: 8,
+                expenses: 350,
+                profit: demo1Profit,
+                profitRaw: demo1ProfitRaw,
+                time: demoTime,
+                timestamp: Date.now() - 3600000
+            },
+            {
+                id: Date.now() + 1002,
+                itemName: "Партия оружия",
+                buy: 45000,
+                sell: 38000,
+                tax: 15,
+                expenses: 2200,
+                profit: demo2Profit,
+                profitRaw: demo2ProfitRaw,
+                time: demoTime,
+                timestamp: Date.now() - 7200000
+            },
+            {
+                id: Date.now() + 1003,
+                itemName: "Наркотические вещества",
+                buy: 32000,
+                sell: 56000,
+                tax: 12,
+                expenses: 1800,
+                profit: (56000-32000-1800) * (1 - 12/100),
+                profitRaw: 56000-32000-1800,
+                time: demoTime,
+                timestamp: Date.now() - 86400000
+            }
+        ];
+        historyArray.push(...demoRecords);
+        saveHistoryToStorage();
+        renderHistoryList();
+    }
 </script>
 </body>
 </html>
