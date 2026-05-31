@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>GTA 5 RP Калькулятор — Название товара + история</title>
+    <title>GTA 5 RP Калькулятор — Общая прибыль</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -39,6 +39,7 @@
             margin-bottom: 5px;
         }
 
+        /* ВОЗВРАЩАЕМ ПОДЗАГОЛОВОК "by Fredorkom" */
         .sub {
             text-align: center;
             color: #8e9aaf;
@@ -119,8 +120,47 @@
             color: #aaa;
         }
 
+        /* УМЕНЬШЕННЫЙ КОМПАКТНЫЙ блок общей прибыли */
+        .total-earnings {
+            background: linear-gradient(145deg, #1f2a46, #0f172f);
+            border-radius: 28px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid #ffb34755;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .total-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #cbd5ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .total-label i {
+            color: #ffd966;
+            font-size: 20px;
+        }
+
+        .total-amount {
+            font-size: 26px;
+            font-weight: 800;
+            background: #00000055;
+            padding: 4px 18px;
+            border-radius: 60px;
+            letter-spacing: 1px;
+            font-family: monospace;
+        }
+
         .history-section {
-            margin-top: 30px;
+            margin-top: 25px;
             background: rgba(10, 15, 28, 0.6);
             border-radius: 28px;
             padding: 10px 5px 15px 5px;
@@ -292,14 +332,32 @@
             margin-top: 18px;
             color: #5b6885;
         }
+
+        @media (max-width: 550px) {
+            .total-earnings {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 8px 16px;
+            }
+            .total-amount {
+                font-size: 22px;
+                padding: 2px 14px;
+            }
+            .total-label {
+                font-size: 14px;
+            }
+            .container {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>⌨️ GTA 5 RP Калькулятор</h1>
-    <div class="sub">by Fredorkom</div>
+    <div class="sub">by Fredorkom</div>  <!-- ПОДЗАГОЛОВОК ВЕРНУЛСЯ -->
 
-    <!-- ПОЛЕ ДЛЯ НАЗВАНИЯ ТОВАРА - ИСПРАВЛЕНО -->
+    <!-- ПОЛЕ ДЛЯ НАЗВАНИЯ ТОВАРА -->
     <label><i class="fas fa-tag"></i> Название товара / сделки:</label>
     <textarea id="itemName" placeholder="Пример: Броневик, Оружие, Наркотики, Техника..." style="min-height: 45px;"></textarea>
 
@@ -309,9 +367,6 @@
     <label><i class="fas fa-chart-line"></i> Цена продажи ($):</label>
     <input type="number" id="sellPrice" placeholder="25000" value="25000">
 
-    <label><i class="fas fa-percent"></i> Налог (%):</label>
-    <input type="number" id="tax" placeholder="10" value="10">
-
     <label><i class="fas fa-receipt"></i> Расходы ($):</label>
     <input type="number" id="expenses" placeholder="0" value="0">
 
@@ -320,6 +375,15 @@
     <div class="result" id="resultBlock">
         <span>💰 Чистая прибыль:</span>
         <p id="resultValue">—</p>
+    </div>
+
+    <!-- КОМПАКТНЫЙ БЛОК ОБЩЕЙ ПРИБЫЛИ -->
+    <div class="total-earnings" id="totalEarningsBlock">
+        <div class="total-label">
+            <i class="fas fa-chart-line"></i> 
+            <span>Общая прибыль за всё время</span>
+        </div>
+        <div class="total-amount" id="totalProfitDisplay">$0.00</div>
     </div>
 
     <!-- БЛОК ИСТОРИИ -->
@@ -414,25 +478,25 @@
         } catch(e) {}
     }
     
-    // Звуки на ввод (кроме textarea, чтобы не мешать печатать, но добавим легкий звук при фокусе)
+    // Звуки на ввод input
     const allInputs = document.querySelectorAll('input');
     allInputs.forEach(el => {
         el.addEventListener('input', () => playKeyboardSound());
         el.addEventListener('click', () => playKeyboardSound());
     });
     
-    // Для textarea - только клик для фокуса, без звука при каждом символе, чтобы не бесить
     const itemNameField = document.getElementById('itemName');
     if (itemNameField) {
         itemNameField.addEventListener('click', () => playKeyboardSound());
-        // не добавляем input звук, чтобы при печати не отвлекало
     }
     
     const calcButton = document.querySelector('button');
-    calcButton.addEventListener('click', () => {
-        playEnterSound();
-        if (navigator.vibrate) navigator.vibrate(20);
-    });
+    if (calcButton) {
+        calcButton.addEventListener('click', () => {
+            playEnterSound();
+            if (navigator.vibrate) navigator.vibrate(20);
+        });
+    }
     
     document.body.addEventListener('click', function initAudio() {
         if (audioCtx && audioCtx.state === 'suspended') {
@@ -442,9 +506,36 @@
         document.body.removeEventListener('click', initAudio);
     });
     
-    // ---------------------- ИСТОРИЯ -------------------------
+    // ---------------------- ИСТОРИЯ + ОБЩАЯ ПРИБЫЛЬ (без налога) -------------------------
     let historyArray = [];   
-    const STORAGE_KEY = "gta_rp_calc_history_v3";
+    const STORAGE_KEY = "gta_rp_calc_history_fredorkom_final";
+    
+    // Подсчет общей суммы прибыли
+    function computeTotalProfit() {
+        let total = 0;
+        for (let record of historyArray) {
+            if (typeof record.profit === 'number' && !isNaN(record.profit)) {
+                total += record.profit;
+            }
+        }
+        return total;
+    }
+    
+    function updateTotalProfitUI() {
+        const totalProfit = computeTotalProfit();
+        const totalElem = document.getElementById('totalProfitDisplay');
+        if (totalElem) {
+            const formatted = totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            totalElem.textContent = `$${formatted}`;
+            if (totalProfit >= 0) {
+                totalElem.style.color = "#a3f0b0";
+                totalElem.style.textShadow = "0 0 2px #00aa33";
+            } else {
+                totalElem.style.color = "#ff9a8b";
+                totalElem.style.textShadow = "0 0 2px #aa3322";
+            }
+        }
+    }
     
     function loadHistoryFromStorage() {
         const stored = localStorage.getItem(STORAGE_KEY);
@@ -453,6 +544,7 @@
                 historyArray = JSON.parse(stored);
                 if (!Array.isArray(historyArray)) historyArray = [];
                 historyArray = historyArray.map(record => {
+                    if (record.profit === undefined) record.profit = 0;
                     if (record.itemName === undefined) record.itemName = "";
                     return record;
                 });
@@ -461,13 +553,15 @@
             historyArray = [];
         }
         renderHistoryList();
+        updateTotalProfitUI();
     }
     
     function saveHistoryToStorage() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(historyArray));
+        updateTotalProfitUI();
     }
     
-    function addHistoryRecord(itemName, buy, sell, taxPercent, expenses, profit, profitRaw) {
+    function addHistoryRecord(itemName, buy, sell, expenses, profit) {
         const now = new Date();
         const timeString = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
         let finalName = itemName.trim();
@@ -478,23 +572,23 @@
             itemName: finalName,
             buy: buy,
             sell: sell,
-            tax: taxPercent,
             expenses: expenses,
             profit: profit,
-            profitRaw: profitRaw,
             time: timeString,
             timestamp: now.getTime()
         };
         historyArray.unshift(record);   
-        if (historyArray.length > 45) historyArray.pop();
+        if (historyArray.length > 50) historyArray.pop();
         saveHistoryToStorage();
         renderHistoryList();
+        updateTotalProfitUI();
     }
     
     function clearHistory() {
         historyArray = [];
         saveHistoryToStorage();
         renderHistoryList();
+        updateTotalProfitUI();
         playKeyboardSound();
     }
     
@@ -502,6 +596,7 @@
         historyArray = historyArray.filter(item => item.id !== id);
         saveHistoryToStorage();
         renderHistoryList();
+        updateTotalProfitUI();
         playKeyboardSound();
     }
     
@@ -546,10 +641,9 @@
                         </div>
                     </div>
                     <div class="history-details">
-                        <span><i class="fas fa-shopping-cart"></i> ${record.buy.toFixed(2)}$</span>
-                        <span><i class="fas fa-arrow-right"></i> ${record.sell.toFixed(2)}$</span>
-                        <span><i class="fas fa-percent"></i> ${record.tax}%</span>
-                        <span><i class="fas fa-tools"></i> ${record.expenses.toFixed(2)}$</span>
+                        <span><i class="fas fa-shopping-cart"></i> Покупка: $${record.buy.toFixed(2)}</span>
+                        <span><i class="fas fa-arrow-right"></i> Продажа: $${record.sell.toFixed(2)}</span>
+                        <span><i class="fas fa-tools"></i> Расходы: $${record.expenses.toFixed(2)}</span>
                         <span class="history-time"><i class="far fa-clock"></i> ${record.time}</span>
                     </div>
                 </div>
@@ -566,17 +660,15 @@
         });
     }
     
-    // ---------------------- ОСНОВНОЙ РАСЧЁТ -------------------------
+    // ---------------------- ОСНОВНОЙ РАСЧЁТ (БЕЗ НАЛОГА) -------------------------
     function calculate() {
         let itemName = document.getElementById('itemName').value || "";
         let buy = parseFloat(document.getElementById('buyPrice').value) || 0;
         let sell = parseFloat(document.getElementById('sellPrice').value) || 0;
-        let tax = parseFloat(document.getElementById('tax').value) || 0;
         let expenses = parseFloat(document.getElementById('expenses').value) || 0;
         
-        let profitBeforeTax = sell - buy - expenses;
-        let taxAmount = profitBeforeTax * (tax / 100);
-        let finalProfit = profitBeforeTax - taxAmount;
+        // Формула без налога: чистая прибыль = продажа - покупка - расходы
+        let finalProfit = sell - buy - expenses;
         
         let resultElement = document.getElementById('resultValue');
         if (finalProfit >= 0) {
@@ -591,22 +683,27 @@
         block.style.transform = "scale(1.02)";
         setTimeout(() => block.style.transform = "scale(1)", 150);
         
-        addHistoryRecord(itemName, buy, sell, tax, expenses, finalProfit, profitBeforeTax);
+        addHistoryRecord(itemName, buy, sell, expenses, finalProfit);
     }
     
-    document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
-        if (confirm('🗑️ Очистить всю историю расчетов?')) {
-            clearHistory();
-            playEnterSound();
-        } else {
-            playKeyboardSound();
-        }
-    });
+    // Обработчик очистки истории
+    const clearBtn = document.getElementById('clearHistoryBtn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            if (confirm('🗑️ Очистить всю историю расчетов? Общая прибыль обнулится.')) {
+                clearHistory();
+                playEnterSound();
+            } else {
+                playKeyboardSound();
+            }
+        });
+    }
     
+    // Загружаем историю из LocalStorage
     loadHistoryFromStorage();
     
-    // Enter на полях (кроме textarea - там Enter для переноса строки)
-    const numberFields = ['buyPrice', 'sellPrice', 'tax', 'expenses'];
+    // Добавляем Enter на полях
+    const numberFields = ['buyPrice', 'sellPrice', 'expenses'];
     numberFields.forEach(id => {
         const field = document.getElementById(id);
         if (field) {
@@ -631,21 +728,18 @@
         });
     }
     
-    // Демо-записи при пустой истории
+    // Демо-записи (примеры сделок без налога)
     if (historyArray.length === 0) {
         const demoDate = new Date();
         const demoTime = `${demoDate.toLocaleDateString()} ${demoDate.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        
         const demoRecords = [
             {
                 id: Date.now() + 1001,
                 itemName: "Бронеавтомобиль",
                 buy: 12500,
                 sell: 27800,
-                tax: 8,
                 expenses: 350,
-                profit: (27800-12500-350) * (1 - 8/100),
-                profitRaw: 27800-12500-350,
+                profit: 27800 - 12500 - 350,
                 time: demoTime,
                 timestamp: Date.now() - 3600000
             },
@@ -654,10 +748,8 @@
                 itemName: "Партия оружия",
                 buy: 45000,
                 sell: 38000,
-                tax: 15,
                 expenses: 2200,
-                profit: (38000-45000-2200) * (1 - 15/100),
-                profitRaw: 38000-45000-2200,
+                profit: 38000 - 45000 - 2200,
                 time: demoTime,
                 timestamp: Date.now() - 7200000
             },
@@ -666,18 +758,36 @@
                 itemName: "Наркотические вещества",
                 buy: 32000,
                 sell: 56000,
-                tax: 12,
                 expenses: 1800,
-                profit: (56000-32000-1800) * (1 - 12/100),
-                profitRaw: 56000-32000-1800,
+                profit: 56000 - 32000 - 1800,
                 time: demoTime,
                 timestamp: Date.now() - 86400000
+            },
+            {
+                id: Date.now() + 1004,
+                itemName: "Элитная техника",
+                buy: 86000,
+                sell: 112500,
+                expenses: 4300,
+                profit: 112500 - 86000 - 4300,
+                time: demoTime,
+                timestamp: Date.now() - 172800000
             }
         ];
         historyArray.push(...demoRecords);
         saveHistoryToStorage();
         renderHistoryList();
+        updateTotalProfitUI();
+    } else {
+        updateTotalProfitUI();
     }
+    
+    // Синхронизация при изменении localStorage из других вкладок
+    window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY) {
+            loadHistoryFromStorage();
+        }
+    });
 </script>
 </body>
 </html>
