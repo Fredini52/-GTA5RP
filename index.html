@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>GTA 5 RP Калькулятор — Дневник перекупа</title>
+    <title>Дневник перекупа — GTA 5 RP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -106,25 +106,17 @@
             border: 1px solid var(--accent);
         }
 
-        .profile-title {
-            font-size: 24px;
+        .profile-header h1 {
+            font-size: 32px;
             font-weight: bold;
             color: var(--accent);
+            margin-bottom: 5px;
         }
 
-        .profile-sub {
+        .profile-header .sub {
             color: var(--text-secondary);
             font-size: 14px;
-            margin: 5px 0;
-        }
-
-        .sub-by {
-            text-align: right;
-            color: var(--text-secondary);
-            font-size: 12px;
-            margin-top: 10px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 8px;
+            margin-bottom: 15px;
         }
 
         .tip {
@@ -276,9 +268,9 @@
 
         .marketplace-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 15px;
-            max-height: 300px;
+            max-height: 450px;
             overflow-y: auto;
             margin: 15px 0;
         }
@@ -299,10 +291,25 @@
         }
 
         .market-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--accent);
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 5px 0;
+        }
+
+        .sell-input {
+            width: 100%;
+            padding: 8px;
             margin: 8px 0;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .sell-input::placeholder {
+            color: var(--text-secondary);
+            font-size: 12px;
         }
 
         .sell-btn {
@@ -324,6 +331,7 @@
 
         .add-item-form input {
             flex: 1;
+            min-width: 120px;
         }
 
         .add-item-form button {
@@ -486,9 +494,10 @@
     <!-- ЛЕВАЯ КОЛОНКА -->
     <div class="panel">
         <div class="profile-header">
-            <div class="profile-title">⌨️ GTA 5 RP Калькулятор</div>
-            <div class="profile-sub">Дневник перекупа — Перепродажи и аренда</div>
-            <div class="sub-by">by Fredorkom</div>
+            <h1>📓 Дневник перекупа</h1>
+            <div style="text-align: right; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px;">by Fredorkom</div>
+            <div class="sub">Перепродажи и аренда авто — профиль: Основной</div>
+            <div class="tip">💡 Совет: Все доходы и аренды можно смотреть по выбранному периоду.</div>
         </div>
 
         <label>📦 Название товара / сделки:</label>
@@ -511,7 +520,6 @@
             <span id="totalProfitDisplay" style="font-size: 24px; font-weight: bold;">$0</span>
         </div>
 
-        <!-- Фильтры для истории -->
         <div class="filter-section">
             <div class="filter-buttons">
                 <button class="filter-btn active" data-filter-deals="all" onclick="setDealsDateFilter('all')">Всё</button>
@@ -541,11 +549,11 @@
         </div>
     </div>
 
-    <!-- ПРАВАЯ КОЛОНКА -->
+    <!-- ПРАВАЯ КОЛОНКА - МАРКЕТПЛЕЙС -->
     <div class="panel">
         <div class="profile-header">
-            <div class="profile-title">🛒 Маркетплейс</div>
-            <div class="profile-sub">Товары на продажу — деньги поступают только после нажатия "Продано"</div>
+            <h1>🛒 Маркетплейс</h1>
+            <div class="sub">Добавьте товар с ценой покупки. Введите цену продажи и нажмите "Продать"</div>
         </div>
 
         <div class="marketplace-grid" id="marketplaceGrid">
@@ -554,13 +562,12 @@
 
         <div class="add-item-form">
             <input type="text" id="marketItemName" placeholder="Название товара">
-            <input type="number" id="marketItemPrice" placeholder="Цена $">
+            <input type="number" id="marketBuyPrice" placeholder="Цена покупки $">
             <input type="file" id="marketItemImage" accept="image/*">
             <button onclick="addMarketItem()">➕ Добавить на маркет</button>
         </div>
-        <div class="tip">⭐ Товар на маркете. Нажмите "Продано" — деньги поступят в общую прибыль</div>
+        <div class="tip">⭐ Введите цену продажи в поле и нажмите "Продать" — прибыль поступит в общую прибыль</div>
 
-        <!-- Фильтры для проданных -->
         <div class="filter-section">
             <div class="filter-buttons">
                 <button class="filter-btn active" data-filter-sold="all" onclick="setSoldDateFilter('all')">Всё</button>
@@ -591,7 +598,6 @@
     </div>
 </div>
 
-<!-- Модальное окно настроек -->
 <div id="settingsModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -631,7 +637,6 @@
 </div>
 
 <script>
-    // ЗВУК
     let audioCtx = null;
     let currentVolume = 0.7;
 
@@ -685,17 +690,16 @@
         playKeyboardSound();
     }
 
-    function openModal() {
+    window.openModal = function() {
         document.getElementById('settingsModal').style.display = 'flex';
         playKeyboardSound();
     }
 
-    function closeModal() {
+    window.closeModal = function() {
         document.getElementById('settingsModal').style.display = 'none';
         playKeyboardSound();
     }
 
-    // ДАННЫЕ
     let dealsHistory = [];
     let marketItems = [];
     let soldItems = [];
@@ -732,7 +736,6 @@
         localStorage.setItem(STORAGE_PROFIT, totalProfit);
     }
 
-    // ФИЛЬТРАЦИЯ
     function isDateInRange(itemDate, filter, startDate, endDate) {
         const date = new Date(itemDate);
         const today = new Date();
@@ -758,7 +761,7 @@
         return true;
     }
 
-    function setDealsDateFilter(filter) {
+    window.setDealsDateFilter = function(filter) {
         dealsFilter = filter;
         if (filter !== 'custom') {
             dealsStartDate = null;
@@ -774,7 +777,7 @@
         playKeyboardSound();
     }
 
-    function setDealsCustomDateRange() {
+    window.setDealsCustomDateRange = function() {
         const start = document.getElementById('dealsStartDate').value;
         const end = document.getElementById('dealsEndDate').value;
         if (start && end) {
@@ -786,7 +789,7 @@
         }
     }
 
-    function resetDealsFilters() {
+    window.resetDealsFilters = function() {
         dealsFilter = 'all';
         dealsStartDate = null;
         dealsEndDate = null;
@@ -798,7 +801,7 @@
         playKeyboardSound();
     }
 
-    function setSoldDateFilter(filter) {
+    window.setSoldDateFilter = function(filter) {
         soldFilter = filter;
         if (filter !== 'custom') {
             soldStartDate = null;
@@ -814,7 +817,7 @@
         playKeyboardSound();
     }
 
-    function setSoldCustomDateRange() {
+    window.setSoldCustomDateRange = function() {
         const start = document.getElementById('soldStartDate').value;
         const end = document.getElementById('soldEndDate').value;
         if (start && end) {
@@ -826,7 +829,7 @@
         }
     }
 
-    function resetSoldFilters() {
+    window.resetSoldFilters = function() {
         soldFilter = 'all';
         soldStartDate = null;
         soldEndDate = null;
@@ -838,8 +841,7 @@
         playKeyboardSound();
     }
 
-    // КАЛЬКУЛЯТОР
-    function calculateDeal() {
+    window.calculateDeal = function() {
         let name = document.getElementById('itemName').value || "Без названия";
         let buy = parseFloat(document.getElementById('buyPrice').value) || 0;
         let sell = parseFloat(document.getElementById('sellPrice').value) || 0;
@@ -867,8 +869,7 @@
         playEnterSound();
     }
 
-    // УДАЛЕНИЕ ЗАПИСЕЙ
-    function deleteDeal(id) {
+    window.deleteDeal = function(id) {
         const deal = dealsHistory.find(d => d.id === id);
         if (deal) {
             totalProfit -= deal.profit;
@@ -880,8 +881,7 @@
         }
     }
 
-    // ОЧИСТКА ВСЕЙ ИСТОРИИ - ПРОСТО ОБНУЛЯЕМ ПРИБЫЛЬ ДО 0
-    function clearAllDeals() {
+    window.clearAllDeals = function() {
         if (confirm('🗑️ Удалить ВСЮ историю расчётов? Общая прибыль обнулится!')) {
             dealsHistory = [];
             totalProfit = 0;
@@ -892,10 +892,95 @@
         }
     }
 
-    function deleteSoldItem(id) {
+    window.addMarketItem = function() {
+        const name = document.getElementById('marketItemName').value;
+        const buyPrice = parseFloat(document.getElementById('marketBuyPrice').value);
+        const file = document.getElementById('marketItemImage').files[0];
+        
+        if (!name || isNaN(buyPrice) || buyPrice <= 0) {
+            alert('Введите название и цену покупки');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            marketItems.push({
+                id: Date.now(),
+                name: name,
+                buyPrice: buyPrice,
+                sellPriceInput: buyPrice,
+                image: e.target.result || null,
+                date: new Date().toLocaleString()
+            });
+            document.getElementById('marketItemName').value = '';
+            document.getElementById('marketBuyPrice').value = '';
+            document.getElementById('marketItemImage').value = '';
+            saveAllData();
+            updateMarketplaceGrid();
+            playKeyboardSound();
+        };
+        if (file) reader.readAsDataURL(file);
+        else reader.onload();
+    }
+
+    window.updateSellPrice = function(id, value) {
+        const item = marketItems.find(i => i.id === id);
+        if (item) {
+            item.sellPriceInput = parseFloat(value) || 0;
+        }
+    }
+
+    window.sellMarketItem = function(id) {
+        const item = marketItems.find(i => i.id === id);
+        if (!item) return;
+        
+        const sellPrice = item.sellPriceInput;
+        if (isNaN(sellPrice) || sellPrice < 0) {
+            alert('Введите корректную цену продажи');
+            return;
+        }
+        
+        const profit = sellPrice - item.buyPrice;
+        
+        totalProfit += profit;
+        
+        soldItems.unshift({
+            id: Date.now(),
+            name: item.name,
+            buyPrice: item.buyPrice,
+            sellPrice: sellPrice,
+            profit: profit,
+            date: new Date().toLocaleString()
+        });
+        
+        marketItems = marketItems.filter(i => i.id !== id);
+        if (soldItems.length > 50) soldItems.pop();
+        saveAllData();
+        updateMarketplaceGrid();
+        updateSoldList();
+        updateTotalProfitDisplay();
+        
+        if (profit >= 0) {
+            alert(`✅ Продано! Прибыль: +$${profit.toFixed(2)}`);
+        } else {
+            alert(`⚠️ Продано в убыток: $${profit.toFixed(2)}`);
+        }
+        playEnterSound();
+    }
+
+    window.removeMarketItem = function(id) {
+        if (confirm('Удалить товар без продажи?')) {
+            marketItems = marketItems.filter(i => i.id !== id);
+            saveAllData();
+            updateMarketplaceGrid();
+            playKeyboardSound();
+        }
+    }
+
+    window.deleteSoldItem = function(id) {
         const item = soldItems.find(s => s.id === id);
         if (item) {
-            totalProfit -= item.price;
+            totalProfit -= item.profit;
             soldItems = soldItems.filter(s => s.id !== id);
             saveAllData();
             updateSoldList();
@@ -904,7 +989,7 @@
         }
     }
 
-    function clearAllSold() {
+    window.clearAllSold = function() {
         if (confirm('🗑️ Удалить ВСЕ проданные товары? Прибыль обнулится!')) {
             soldItems = [];
             totalProfit = 0;
@@ -915,52 +1000,6 @@
         }
     }
 
-    // МАРКЕТПЛЕЙС
-    function addMarketItem() {
-        const name = document.getElementById('marketItemName').value;
-        const price = parseFloat(document.getElementById('marketItemPrice').value);
-        const file = document.getElementById('marketItemImage').files[0];
-        if (!name || isNaN(price) || price <= 0) { alert('Введите название и цену'); return; }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            marketItems.push({ id: Date.now(), name: name, price: price, image: e.target.result || null, date: new Date().toLocaleString() });
-            document.getElementById('marketItemName').value = '';
-            document.getElementById('marketItemPrice').value = '';
-            document.getElementById('marketItemImage').value = '';
-            saveAllData();
-            updateMarketplaceGrid();
-            playKeyboardSound();
-        };
-        if (file) reader.readAsDataURL(file);
-        else reader.onload();
-    }
-
-    function sellMarketItem(id) {
-        const item = marketItems.find(i => i.id === id);
-        if (item) {
-            totalProfit += item.price;
-            soldItems.unshift({ id: Date.now(), name: item.name, price: item.price, date: new Date().toLocaleString() });
-            marketItems = marketItems.filter(i => i.id !== id);
-            if (soldItems.length > 50) soldItems.pop();
-            saveAllData();
-            updateMarketplaceGrid();
-            updateSoldList();
-            updateTotalProfitDisplay();
-            playEnterSound();
-        }
-    }
-
-    function removeMarketItem(id) {
-        if (confirm('Удалить товар без продажи?')) {
-            marketItems = marketItems.filter(i => i.id !== id);
-            saveAllData();
-            updateMarketplaceGrid();
-            playKeyboardSound();
-        }
-    }
-
-    // ОБНОВЛЕНИЕ UI
     function updateTotalProfitDisplay() {
         document.getElementById('totalProfitDisplay').innerHTML = `$${totalProfit.toLocaleString()}`;
     }
@@ -997,8 +1036,9 @@
                 <div class="market-item">
                     ${item.image ? `<img src="${item.image}" alt="${item.name}">` : '<div style="height:100px;background:#2a3450;border-radius:15px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="font-size:30px;color:#555"></i></div>'}
                     <div style="font-weight:bold; margin-top:8px;">${escapeHtml(item.name)}</div>
-                    <div class="market-price">${item.price.toLocaleString()} $</div>
-                    <button class="sell-btn" onclick="sellMarketItem(${item.id})">💵 Продано</button>
+                    <div class="market-price">💰 Куплен за: $${item.buyPrice.toLocaleString()}</div>
+                    <input type="number" class="sell-input" id="sellPrice_${item.id}" placeholder="Введите цену продажи" value="${item.sellPriceInput}" oninput="updateSellPrice(${item.id}, this.value)">
+                    <button class="sell-btn" onclick="sellMarketItem(${item.id})">💵 Продать</button>
                     <button class="delete-btn" onclick="removeMarketItem(${item.id})">🗑️ Удалить</button>
                 </div>
             `).join('');
@@ -1015,11 +1055,12 @@
             soldDiv.innerHTML = filtered.map(s => `
                 <div class="income-item">
                     <div class="income-info">
-                        <span style="color:var(--success); font-weight:bold;">+ ${s.price.toLocaleString()} $</span>
-                        <div style="font-size:11px;">${escapeHtml(s.name)}</div>
+                        <span style="font-weight:bold;">${escapeHtml(s.name)}</span>
+                        <div style="font-size:10px;">Куплен: $${s.buyPrice.toLocaleString()} | Продан: $${s.sellPrice.toLocaleString()}</div>
                         <div style="font-size:10px;">${s.date}</div>
                     </div>
                     <div class="income-actions">
+                        <div style="color:${s.profit >= 0 ? '#6fcf97' : '#e06c75'}; font-weight:bold;">${s.profit >= 0 ? '+' : '-'} $${Math.abs(s.profit).toLocaleString()}</div>
                         <button class="delete-btn" onclick="deleteSoldItem(${s.id})"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
@@ -1036,7 +1077,6 @@
 
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-    // НАСТРОЙКИ
     function setBackgroundColor(color) {
         document.body.classList.remove('bg-black', 'bg-white', 'bg-green', 'bg-blue', 'bg-red', 'bg-purple', 'bg-orange', 'bg-pink');
         document.body.classList.add(`bg-${color}`);
@@ -1053,7 +1093,6 @@
         document.querySelector(`#btnColorGrid .color-btn[data-btn="${color}"]`).classList.add('active');
     }
 
-    // ИНИЦИАЛИЗАЦИЯ
     const savedBg = localStorage.getItem('bgColor');
     if (savedBg) setBackgroundColor(savedBg);
     else setBackgroundColor('black');
