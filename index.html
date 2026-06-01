@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>GTA 5 RP Калькулятор — Общая прибыль</title>
+    <title>GTA 5 RP Калькулятор — Дневник перекупа</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * {
             margin: 0;
@@ -11,783 +12,1070 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-gradient-start: #0b1120;
+            --bg-gradient-end: #19233c;
+            --container-bg: rgba(18, 25, 45, 0.95);
+            --card-bg: #1a2540cc;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5ff;
+            --accent: #ff9a2e;
+            --accent-hover: #ff5e00;
+            --border-color: #3a4a6a;
+            --success: #6fcf97;
+            --danger: #e06c75;
+            --input-bg: #0f1422;
+            --header-bg: linear-gradient(95deg, #1f2a46, #0f172f);
+        }
+
+        body.bg-black { --bg-gradient-start: #0a0a0a; --bg-gradient-end: #1a1a1a; --container-bg: rgba(0,0,0,0.92); --card-bg: #1a1a1acc; --text-primary: #ffffff; --text-secondary: #bbbbbb; --input-bg: #222; --border-color: #444; --header-bg: linear-gradient(95deg, #1a1a1a, #0a0a0a); }
+        body.bg-white { --bg-gradient-start: #e8ecf2; --bg-gradient-end: #d0d8e8; --container-bg: rgba(255,255,255,0.95); --card-bg: #f0f2f5cc; --text-primary: #1a1a2e; --text-secondary: #4a5568; --input-bg: #fff; --border-color: #cbd5e1; --header-bg: linear-gradient(95deg, #e2e8f0, #cbd5e1); }
+        body.bg-green { --bg-gradient-start: #0a2e1f; --bg-gradient-end: #1a4a2a; --container-bg: rgba(20,40,25,0.95); --card-bg: #1a3a25cc; --text-primary: #ffffff; --text-secondary: #a8e6cf; --input-bg: #1a3a25; --border-color: #2a5a3a; --header-bg: linear-gradient(95deg, #1e5a3a, #0f3a22); }
+        body.bg-blue { --bg-gradient-start: #0a1628; --bg-gradient-end: #1a2a4a; --container-bg: rgba(20,30,50,0.95); --card-bg: #1a2540cc; --text-primary: #ffffff; --text-secondary: #a8c8ff; --input-bg: #1a2540; --border-color: #2a3a60; --header-bg: linear-gradient(95deg, #1e3a5a, #0f2a4a); }
+        body.bg-red { --bg-gradient-start: #2a0a0a; --bg-gradient-end: #4a1a1a; --container-bg: rgba(50,20,20,0.95); --card-bg: #3a1a1acc; --text-primary: #ffffff; --text-secondary: #ffaaaa; --input-bg: #3a1a1a; --border-color: #6a2a2a; --header-bg: linear-gradient(95deg, #5a2a2a, #3a1a1a); }
+        body.bg-purple { --bg-gradient-start: #1a0a2a; --bg-gradient-end: #2a1a4a; --container-bg: rgba(30,20,50,0.95); --card-bg: #2a1a4acc; --text-primary: #ffffff; --text-secondary: #d4aaff; --input-bg: #2a1a4a; --border-color: #4a2a6a; --header-bg: linear-gradient(95deg, #3a2a5a, #2a1a4a); }
+        body.bg-orange { --bg-gradient-start: #2a1a0a; --bg-gradient-end: #4a2a1a; --container-bg: rgba(50,30,20,0.95); --card-bg: #3a2a1acc; --text-primary: #ffffff; --text-secondary: #ffccaa; --input-bg: #3a2a1a; --border-color: #6a4a2a; --header-bg: linear-gradient(95deg, #5a3a2a, #3a2a1a); }
+        body.bg-pink { --bg-gradient-start: #2a0a1a; --bg-gradient-end: #4a1a2a; --container-bg: rgba(50,20,40,0.95); --card-bg: #3a1a2acc; --text-primary: #ffffff; --text-secondary: #ffccdd; --input-bg: #3a1a2a; --border-color: #6a2a4a; --header-bg: linear-gradient(95deg, #5a2a4a, #3a1a2a); }
+
+        body.btn-orange { --accent: #ff9a2e; --accent-hover: #ff5e00; }
+        body.btn-green { --accent: #2ecc71; --accent-hover: #27ae60; }
+        body.btn-blue { --accent: #3498db; --accent-hover: #2980b9; }
+        body.btn-red { --accent: #e74c3c; --accent-hover: #c0392b; }
+        body.btn-purple { --accent: #9b59b6; --accent-hover: #7d3c98; }
+        body.btn-cyan { --accent: #1abc9c; --accent-hover: #16a085; }
+        body.btn-pink { --accent: #fd79a8; --accent-hover: #e84393; }
+        body.btn-gold { --accent: #f1c40f; --accent-hover: #d4ac0d; }
+
         body {
-            background: linear-gradient(135deg, #0b1120, #19233c);
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
             font-family: 'Segoe UI', system-ui;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
             padding: 20px;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
         }
 
-        .container {
-            background: rgba(18, 25, 45, 0.8);
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            position: relative;
+        }
+
+        .settings-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: 0.2s;
+        }
+
+        .settings-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .settings-icon i {
+            font-size: 26px;
+            color: white;
+        }
+
+        .panel {
+            background: var(--container-bg);
             backdrop-filter: blur(12px);
             border-radius: 40px;
-            padding: 30px;
-            max-width: 620px;
-            width: 100%;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.2);
-            transition: all 0.2s ease;
+            padding: 25px;
+            border: 1px solid var(--border-color);
         }
 
-        h1 {
-            color: #ffd966;
-            font-size: 28px;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        /* ВОЗВРАЩАЕМ ПОДЗАГОЛОВОК "by Fredorkom" */
-        .sub {
-            text-align: center;
-            color: #8e9aaf;
+        .profile-header {
+            background: var(--header-bg);
+            border-radius: 30px;
+            padding: 20px;
             margin-bottom: 25px;
+            border: 1px solid var(--accent);
+        }
+
+        .profile-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .profile-sub {
+            color: var(--text-secondary);
             font-size: 14px;
-            border-bottom: 1px solid #2a3450;
-            padding-bottom: 12px;
+            margin: 5px 0;
+        }
+
+        .sub-by {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+        }
+
+        .tip {
+            background: rgba(255,154,46,0.15);
+            border-left: 3px solid var(--accent);
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        .filter-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: var(--text-primary);
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            transition: 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .date-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 5px 15px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .date-input label {
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .date-input input {
+            width: auto;
+            padding: 5px;
+            margin: 0;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+        }
+
+        .reset-btn {
+            background: var(--danger);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+        }
+
+        .clear-all-btn {
+            background: var(--danger);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            width: auto;
+            margin: 0 0 0 10px;
         }
 
         label {
             display: block;
-            margin: 12px 0 5px 0;
-            color: #cbd5ff;
-            font-weight: 500;
+            margin: 12px 0 5px;
+            color: var(--text-secondary);
         }
 
         input, textarea {
             width: 100%;
-            padding: 12px 16px;
-            background: #0f1422;
-            border: 1px solid #2a3450;
+            padding: 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
-            color: white;
-            font-size: 16px;
-            transition: 0.2s;
-            font-family: inherit;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 45px;
-            max-height: 120px;
-        }
-
-        input:focus, textarea:focus {
-            border-color: #ffb347;
-            outline: none;
-            box-shadow: 0 0 0 2px #ffb34755;
+            color: var(--text-primary);
         }
 
         button {
-            width: 100%;
-            background: linear-gradient(95deg, #ff9a2e, #ff5e00);
+            background: linear-gradient(95deg, var(--accent), var(--accent-hover));
             border: none;
-            padding: 14px;
+            padding: 12px;
             border-radius: 40px;
-            font-weight: bold;
-            font-size: 18px;
             color: white;
-            margin: 25px 0 15px;
+            font-weight: bold;
             cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
             transition: 0.2s;
         }
 
         button:hover {
             transform: scale(1.02);
-            box-shadow: 0 5px 20px #ff9a2eaa;
         }
 
         .result {
-            background: #0a0f1ccc;
+            background: var(--card-bg);
             border-radius: 24px;
             padding: 20px;
             text-align: center;
-            border-left: 4px solid #ffb347;
-            margin-top: 10px;
-            transition: transform 0.1s ease;
+            margin-top: 15px;
+            border-left: 4px solid var(--accent);
         }
 
-        .result p {
-            color: #ffd966;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .result span {
-            font-size: 14px;
-            color: #aaa;
-        }
-
-        /* УМЕНЬШЕННЫЙ КОМПАКТНЫЙ блок общей прибыли */
         .total-earnings {
-            background: linear-gradient(145deg, #1f2a46, #0f172f);
+            background: var(--header-bg);
             border-radius: 28px;
-            padding: 10px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            border: 1px solid #ffb34755;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        .total-label {
-            font-size: 16px;
-            font-weight: bold;
-            color: #cbd5ff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .total-label i {
-            color: #ffd966;
-            font-size: 20px;
-        }
-
-        .total-amount {
-            font-size: 26px;
-            font-weight: 800;
-            background: #00000055;
-            padding: 4px 18px;
-            border-radius: 60px;
-            letter-spacing: 1px;
-            font-family: monospace;
-        }
-
-        .history-section {
-            margin-top: 25px;
-            background: rgba(10, 15, 28, 0.6);
-            border-radius: 28px;
-            padding: 10px 5px 15px 5px;
-            border: 1px solid #2a3450;
-        }
-
-        .history-header {
+            padding: 15px;
+            margin: 20px 0;
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            padding: 0 15px 10px 15px;
-            border-bottom: 1px solid #2a3450;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .history-header h3 {
-            color: #ffd966;
-            font-size: 18px;
-            display: flex;
             align-items: center;
-            gap: 8px;
         }
 
-        .clear-btn {
-            background: rgba(220, 60, 60, 0.8);
-            border: none;
-            padding: 6px 14px;
-            border-radius: 40px;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            width: auto;
-            margin: 0;
-        }
-
-        .clear-btn:hover {
-            background: #e05a5a;
-            transform: scale(1.02);
-            box-shadow: none;
-        }
-
-        .history-list {
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
             max-height: 300px;
             overflow-y: auto;
-            padding: 5px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            margin: 15px 0;
         }
 
-        .history-item {
-            background: #0f1422cc;
+        .market-item {
+            background: var(--card-bg);
             border-radius: 20px;
-            padding: 12px 15px;
-            backdrop-filter: blur(4px);
-            border-left: 4px solid;
-            transition: 0.1s;
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            padding: 12px;
+            text-align: center;
         }
 
-        .history-main {
+        .market-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 15px;
+            background: #2a3450;
+        }
+
+        .market-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+
+        .sell-btn {
+            background: var(--accent);
+            margin-top: 5px;
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            margin-top: 5px;
+        }
+
+        .add-item-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .add-item-form input {
+            flex: 1;
+        }
+
+        .add-item-form button {
+            width: auto;
+            margin-top: 0;
+            padding: 12px 20px;
+        }
+
+        .income-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .income-item {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
             gap: 10px;
         }
 
-        .history-item-name {
-            font-weight: bold;
-            color: #ffd966;
-            background: #00000040;
-            padding: 3px 12px;
-            border-radius: 40px;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            max-width: 220px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .income-info {
+            flex: 1;
         }
 
-        .history-details {
+        .income-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .income-actions button {
+            width: auto;
+            margin: 0;
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+
+        h3 {
+            color: var(--text-primary);
+            margin: 15px 0 10px;
+        }
+
+        .header-with-clear {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--container-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--accent);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: var(--accent);
+        }
+
+        .close-modal {
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            padding: 0 10px;
+            color: var(--text-secondary);
+        }
+
+        .color-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            align-items: baseline;
-            font-size: 12px;
-            color: #b9c3e6;
+            margin-bottom: 20px;
         }
 
-        .history-details span {
-            font-family: monospace;
-            background: #00000033;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-
-        .history-profit {
-            font-weight: bold;
-            font-size: 16px;
-            background: #00000055;
-            padding: 2px 12px;
-            border-radius: 40px;
-            letter-spacing: 0.5px;
-        }
-
-        .history-time {
-            font-size: 10px;
-            color: #7a85a1;
-        }
-
-        .empty-history {
-            text-align: center;
-            padding: 30px 20px;
-            color: #8e9aaf;
-            font-style: italic;
-        }
-
-        .delete-item-btn {
-            background: none;
-            border: none;
-            color: #ff8c8c;
+        .color-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 23px;
             cursor: pointer;
-            font-size: 14px;
-            margin: 0;
-            padding: 5px;
-            width: auto;
-            transition: 0.1s;
-            border-radius: 30px;
+            border: 2px solid transparent;
         }
 
-        .delete-item-btn:hover {
+        .color-btn.active {
+            border-color: white;
             transform: scale(1.1);
-            color: #ff5e5e;
-            background: none;
-            box-shadow: none;
         }
 
-        ::-webkit-scrollbar {
-            width: 4px;
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #0f1422;
-            border-radius: 10px;
+        .volume-slider {
+            flex: 1;
+            height: 5px;
+            -webkit-appearance: none;
+            background: var(--border-color);
+            border-radius: 5px;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #ffb347;
-            border-radius: 10px;
+        .volume-slider::-webkit-slider-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
         }
 
-        .result p {
-            margin-top: 4px;
+        .settings-title {
+            color: var(--text-secondary);
+            margin: 15px 0 10px;
+            font-weight: bold;
         }
 
-        footer {
-            font-size: 10px;
-            text-align: center;
-            margin-top: 18px;
-            color: #5b6885;
-        }
-
-        @media (max-width: 550px) {
-            .total-earnings {
-                flex-direction: row;
-                justify-content: space-between;
-                padding: 8px 16px;
-            }
-            .total-amount {
-                font-size: 22px;
-                padding: 2px 14px;
-            }
-            .total-label {
-                font-size: 14px;
-            }
-            .container {
-                padding: 20px;
-            }
+        @media (max-width: 900px) {
+            .main-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>⌨️ GTA 5 RP Калькулятор</h1>
-    <div class="sub">by Fredorkom</div>  <!-- ПОДЗАГОЛОВОК ВЕРНУЛСЯ -->
 
-    <!-- ПОЛЕ ДЛЯ НАЗВАНИЯ ТОВАРА -->
-    <label><i class="fas fa-tag"></i> Название товара / сделки:</label>
-    <textarea id="itemName" placeholder="Пример: Броневик, Оружие, Наркотики, Техника..." style="min-height: 45px;"></textarea>
+<div class="settings-icon" onclick="openModal()">
+    <i class="fas fa-cog"></i>
+</div>
 
-    <label><i class="fas fa-dollar-sign"></i> Цена покупки ($):</label>
-    <input type="number" id="buyPrice" placeholder="10000" value="10000">
+<div class="main-container">
+    <!-- ЛЕВАЯ КОЛОНКА -->
+    <div class="panel">
+        <div class="profile-header">
+            <div class="profile-title">⌨️ GTA 5 RP Калькулятор</div>
+            <div class="profile-sub">Дневник перекупа — Перепродажи и аренда</div>
+            <div class="sub-by">by Fredorkom</div>
+        </div>
 
-    <label><i class="fas fa-chart-line"></i> Цена продажи ($):</label>
-    <input type="number" id="sellPrice" placeholder="25000" value="25000">
+        <label>📦 Название товара / сделки:</label>
+        <textarea id="itemName" placeholder="Броневик, Оружие, Наркотики..." style="min-height: 45px;"></textarea>
+        <label>💰 Цена покупки ($):</label>
+        <input type="number" id="buyPrice" value="10000">
+        <label>📈 Цена продажи ($):</label>
+        <input type="number" id="sellPrice" value="25000">
+        <label>🛠️ Расходы ($):</label>
+        <input type="number" id="expenses" value="0">
+        <button onclick="calculateDeal()">📊 Рассчитать и сохранить</button>
 
-    <label><i class="fas fa-receipt"></i> Расходы ($):</label>
-    <input type="number" id="expenses" placeholder="0" value="0">
+        <div class="result">
+            <span>💰 Чистая прибыль:</span>
+            <p id="resultValue" style="font-size: 22px; font-weight: bold;">—</p>
+        </div>
 
-    <button onclick="calculate()">📊 Рассчитать и сохранить</button>
+        <div class="total-earnings">
+            <span>🏆 Общая прибыль за всё время</span>
+            <span id="totalProfitDisplay" style="font-size: 24px; font-weight: bold;">$0</span>
+        </div>
 
-    <div class="result" id="resultBlock">
-        <span>💰 Чистая прибыль:</span>
-        <p id="resultValue">—</p>
+        <!-- Фильтры для истории -->
+        <div class="filter-section">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter-deals="all" onclick="setDealsDateFilter('all')">Всё</button>
+                <button class="filter-btn" data-filter-deals="today" onclick="setDealsDateFilter('today')">Сегодня</button>
+                <button class="filter-btn" data-filter-deals="week" onclick="setDealsDateFilter('week')">Неделя</button>
+                <button class="filter-btn" data-filter-deals="month" onclick="setDealsDateFilter('month')">Месяц</button>
+            </div>
+            <div class="date-range">
+                <div class="date-input">
+                    <label>С даты</label>
+                    <input type="date" id="dealsStartDate" onchange="setDealsCustomDateRange()">
+                </div>
+                <div class="date-input">
+                    <label>По дату</label>
+                    <input type="date" id="dealsEndDate" onchange="setDealsCustomDateRange()">
+                </div>
+                <button class="reset-btn" onclick="resetDealsFilters()">Сброс</button>
+            </div>
+        </div>
+
+        <div class="header-with-clear">
+            <h3>📜 История расчётов</h3>
+            <button class="clear-all-btn" onclick="clearAllDeals()">🗑️ Очистить всё</button>
+        </div>
+        <div class="income-list" id="historyList">
+            <div style="text-align:center; color:var(--text-secondary);">Нет расчётов</div>
+        </div>
     </div>
 
-    <!-- КОМПАКТНЫЙ БЛОК ОБЩЕЙ ПРИБЫЛИ -->
-    <div class="total-earnings" id="totalEarningsBlock">
-        <div class="total-label">
-            <i class="fas fa-chart-line"></i> 
-            <span>Общая прибыль за всё время</span>
+    <!-- ПРАВАЯ КОЛОНКА -->
+    <div class="panel">
+        <div class="profile-header">
+            <div class="profile-title">🛒 Маркетплейс</div>
+            <div class="profile-sub">Товары на продажу — деньги поступают только после нажатия "Продано"</div>
         </div>
-        <div class="total-amount" id="totalProfitDisplay">$0.00</div>
-    </div>
 
-    <!-- БЛОК ИСТОРИИ -->
-    <div class="history-section">
-        <div class="history-header">
-            <h3><i class="fas fa-clock"></i> История расчетов</h3>
-            <button class="clear-btn" id="clearHistoryBtn"><i class="fas fa-trash-alt"></i> Очистить всё</button>
+        <div class="marketplace-grid" id="marketplaceGrid">
+            <div style="text-align:center; color:var(--text-secondary); grid-column:1/-1;">Нет товаров. Добавьте ниже!</div>
         </div>
-        <div id="historyList" class="history-list">
-            <div class="empty-history">✨ Здесь будут сохранены все расчеты. Нажми «Рассчитать»!</div>
+
+        <div class="add-item-form">
+            <input type="text" id="marketItemName" placeholder="Название товара">
+            <input type="number" id="marketItemPrice" placeholder="Цена $">
+            <input type="file" id="marketItemImage" accept="image/*">
+            <button onclick="addMarketItem()">➕ Добавить на маркет</button>
+        </div>
+        <div class="tip">⭐ Товар на маркете. Нажмите "Продано" — деньги поступят в общую прибыль</div>
+
+        <!-- Фильтры для проданных -->
+        <div class="filter-section">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter-sold="all" onclick="setSoldDateFilter('all')">Всё</button>
+                <button class="filter-btn" data-filter-sold="today" onclick="setSoldDateFilter('today')">Сегодня</button>
+                <button class="filter-btn" data-filter-sold="week" onclick="setSoldDateFilter('week')">Неделя</button>
+                <button class="filter-btn" data-filter-sold="month" onclick="setSoldDateFilter('month')">Месяц</button>
+            </div>
+            <div class="date-range">
+                <div class="date-input">
+                    <label>С даты</label>
+                    <input type="date" id="soldStartDate" onchange="setSoldCustomDateRange()">
+                </div>
+                <div class="date-input">
+                    <label>По дату</label>
+                    <input type="date" id="soldEndDate" onchange="setSoldCustomDateRange()">
+                </div>
+                <button class="reset-btn" onclick="resetSoldFilters()">Сброс</button>
+            </div>
+        </div>
+
+        <div class="header-with-clear">
+            <h3>📋 Проданные товары</h3>
+            <button class="clear-all-btn" onclick="clearAllSold()">🗑️ Очистить всё</button>
+        </div>
+        <div class="income-list" id="soldList">
+            <div style="text-align:center; color:var(--text-secondary);">Нет продаж</div>
         </div>
     </div>
-    <footer>🔊 каждый клик — звук механической клавиатуры</footer>
+</div>
+
+<!-- Модальное окно настроек -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-sliders-h"></i> Настройки</h2>
+            <div class="close-modal" onclick="closeModal()">&times;</div>
+        </div>
+        <div class="settings-title">🎨 Цвет фона</div>
+        <div class="color-grid" id="bgColorGrid">
+            <div class="color-btn" data-bg="black" style="background:#0a0a0a;"></div>
+            <div class="color-btn" data-bg="white" style="background:#e8ecf2;"></div>
+            <div class="color-btn" data-bg="green" style="background:#0a2e1f;"></div>
+            <div class="color-btn" data-bg="blue" style="background:#0a1628;"></div>
+            <div class="color-btn" data-bg="red" style="background:#2a0a0a;"></div>
+            <div class="color-btn" data-bg="purple" style="background:#1a0a2a;"></div>
+            <div class="color-btn" data-bg="orange" style="background:#2a1a0a;"></div>
+            <div class="color-btn" data-bg="pink" style="background:#2a0a1a;"></div>
+        </div>
+        <div class="settings-title">🎨 Цвет кнопок</div>
+        <div class="color-grid" id="btnColorGrid">
+            <div class="color-btn" data-btn="orange" style="background:#ff9a2e;"></div>
+            <div class="color-btn" data-btn="green" style="background:#2ecc71;"></div>
+            <div class="color-btn" data-btn="blue" style="background:#3498db;"></div>
+            <div class="color-btn" data-btn="red" style="background:#e74c3c;"></div>
+            <div class="color-btn" data-btn="purple" style="background:#9b59b6;"></div>
+            <div class="color-btn" data-btn="cyan" style="background:#1abc9c;"></div>
+            <div class="color-btn" data-btn="pink" style="background:#fd79a8;"></div>
+            <div class="color-btn" data-btn="gold" style="background:#f1c40f;"></div>
+        </div>
+        <div class="settings-title">🔊 Громкость звука клавиш</div>
+        <div class="volume-control">
+            <i class="fas fa-volume-down"></i>
+            <input type="range" id="volumeSlider" min="0" max="100" value="70" class="volume-slider">
+            <i class="fas fa-volume-up"></i>
+            <span id="volumeValue" style="min-width: 45px;">70%</span>
+        </div>
+    </div>
 </div>
 
 <script>
-    // ---------------------- ЗВУКОВАЯ СИСТЕМА -------------------------
+    // ЗВУК
     let audioCtx = null;
-    
-    function playKeyboardSound() {
-        try {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            const now = audioCtx.currentTime;
-            const clickOsc = audioCtx.createOscillator();
-            const clickGain = audioCtx.createGain();
-            clickOsc.connect(clickGain);
-            clickGain.connect(audioCtx.destination);
-            clickOsc.frequency.value = 1800;
-            clickGain.gain.value = 0.25;
-            clickOsc.start();
-            clickGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.03);
-            clickOsc.stop(now + 0.03);
-            
-            const thudOsc = audioCtx.createOscillator();
-            const thudGain = audioCtx.createGain();
-            thudOsc.connect(thudGain);
-            thudGain.connect(audioCtx.destination);
-            thudOsc.frequency.value = 180;
-            thudOsc.type = 'sine';
-            thudGain.gain.value = 0.12;
-            thudOsc.start();
-            thudGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.05);
-            thudOsc.stop(now + 0.05);
-            
-            const pingOsc = audioCtx.createOscillator();
-            const pingGain = audioCtx.createGain();
-            pingOsc.connect(pingGain);
-            pingGain.connect(audioCtx.destination);
-            pingOsc.frequency.value = 3200;
-            pingOsc.type = 'sine';
-            pingGain.gain.value = 0.06;
-            pingOsc.start();
-            pingGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.02);
-            pingOsc.stop(now + 0.02);
-        } catch(e) {}
-    }
-    
-    function playEnterSound() {
-        try {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            const now = audioCtx.currentTime;
-            const enterOsc = audioCtx.createOscillator();
-            const enterGain = audioCtx.createGain();
-            enterOsc.connect(enterGain);
-            enterGain.connect(audioCtx.destination);
-            enterOsc.frequency.value = 1400;
-            enterGain.gain.value = 0.3;
-            enterOsc.start();
-            enterGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.06);
-            enterOsc.stop(now + 0.06);
-            
-            const enterThud = audioCtx.createOscillator();
-            const enterThudGain = audioCtx.createGain();
-            enterThud.connect(enterThudGain);
-            enterThudGain.connect(audioCtx.destination);
-            enterThud.frequency.value = 120;
-            enterThud.type = 'sine';
-            enterThudGain.gain.value = 0.15;
-            enterThud.start();
-            enterThudGain.gain.exponentialRampToValueAtTime(0.00001, now + 0.08);
-            enterThud.stop(now + 0.08);
-        } catch(e) {}
-    }
-    
-    // Звуки на ввод input
-    const allInputs = document.querySelectorAll('input');
-    allInputs.forEach(el => {
-        el.addEventListener('input', () => playKeyboardSound());
-        el.addEventListener('click', () => playKeyboardSound());
-    });
-    
-    const itemNameField = document.getElementById('itemName');
-    if (itemNameField) {
-        itemNameField.addEventListener('click', () => playKeyboardSound());
-    }
-    
-    const calcButton = document.querySelector('button');
-    if (calcButton) {
-        calcButton.addEventListener('click', () => {
-            playEnterSound();
-            if (navigator.vibrate) navigator.vibrate(20);
-        });
-    }
-    
-    document.body.addEventListener('click', function initAudio() {
-        if (audioCtx && audioCtx.state === 'suspended') {
+    let currentVolume = 0.7;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
-        setTimeout(() => playKeyboardSound(), 80);
-        document.body.removeEventListener('click', initAudio);
-    });
-    
-    // ---------------------- ИСТОРИЯ + ОБЩАЯ ПРИБЫЛЬ (без налога) -------------------------
-    let historyArray = [];   
-    const STORAGE_KEY = "gta_rp_calc_history_fredorkom_final";
-    
-    // Подсчет общей суммы прибыли
-    function computeTotalProfit() {
-        let total = 0;
-        for (let record of historyArray) {
-            if (typeof record.profit === 'number' && !isNaN(record.profit)) {
-                total += record.profit;
-            }
-        }
-        return total;
     }
-    
-    function updateTotalProfitUI() {
-        const totalProfit = computeTotalProfit();
-        const totalElem = document.getElementById('totalProfitDisplay');
-        if (totalElem) {
-            const formatted = totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            totalElem.textContent = `$${formatted}`;
-            if (totalProfit >= 0) {
-                totalElem.style.color = "#a3f0b0";
-                totalElem.style.textShadow = "0 0 2px #00aa33";
-            } else {
-                totalElem.style.color = "#ff9a8b";
-                totalElem.style.textShadow = "0 0 2px #aa3322";
-            }
-        }
+
+    function playKeyboardSound() {
+        if (currentVolume <= 0) return;
+        try {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 1800;
+            gain.gain.value = currentVolume * 0.3;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.05);
+            osc.stop(now + 0.05);
+        } catch(e) {}
     }
-    
-    function loadHistoryFromStorage() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            try {
-                historyArray = JSON.parse(stored);
-                if (!Array.isArray(historyArray)) historyArray = [];
-                historyArray = historyArray.map(record => {
-                    if (record.profit === undefined) record.profit = 0;
-                    if (record.itemName === undefined) record.itemName = "";
-                    return record;
-                });
-            } catch(e) { historyArray = []; }
-        } else {
-            historyArray = [];
-        }
-        renderHistoryList();
-        updateTotalProfitUI();
+
+    function playEnterSound() {
+        if (currentVolume <= 0) return;
+        try {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 1400;
+            gain.gain.value = currentVolume * 0.35;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.07);
+            osc.stop(now + 0.07);
+        } catch(e) {}
     }
-    
-    function saveHistoryToStorage() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(historyArray));
-        updateTotalProfitUI();
-    }
-    
-    function addHistoryRecord(itemName, buy, sell, expenses, profit) {
-        const now = new Date();
-        const timeString = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        let finalName = itemName.trim();
-        if (finalName === "") finalName = "Без названия";
-        
-        const record = {
-            id: Date.now() + Math.random() * 10000,
-            itemName: finalName,
-            buy: buy,
-            sell: sell,
-            expenses: expenses,
-            profit: profit,
-            time: timeString,
-            timestamp: now.getTime()
-        };
-        historyArray.unshift(record);   
-        if (historyArray.length > 50) historyArray.pop();
-        saveHistoryToStorage();
-        renderHistoryList();
-        updateTotalProfitUI();
-    }
-    
-    function clearHistory() {
-        historyArray = [];
-        saveHistoryToStorage();
-        renderHistoryList();
-        updateTotalProfitUI();
+
+    function setVolume(value) {
+        currentVolume = value / 100;
+        document.getElementById('volumeValue').innerText = value + '%';
+        localStorage.setItem('volume', value);
         playKeyboardSound();
     }
-    
-    function deleteHistoryItem(id) {
-        historyArray = historyArray.filter(item => item.id !== id);
-        saveHistoryToStorage();
-        renderHistoryList();
-        updateTotalProfitUI();
+
+    function openModal() {
+        document.getElementById('settingsModal').style.display = 'flex';
         playKeyboardSound();
     }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+
+    function closeModal() {
+        document.getElementById('settingsModal').style.display = 'none';
+        playKeyboardSound();
     }
-    
-    function renderHistoryList() {
-        const container = document.getElementById('historyList');
-        if (!container) return;
-        if (historyArray.length === 0) {
-            container.innerHTML = `<div class="empty-history"><i class="fas fa-database"></i> История пуста. Сделайте новый расчет!</div>`;
-            return;
-        }
-        
-        let html = '';
-        for (let record of historyArray) {
-            const profitValue = record.profit;
-            const isPositive = profitValue >= 0;
-            const profitSign = isPositive ? '+' : '−';
-            const profitColor = isPositive ? '#6fcf97' : '#e06c75';
-            const profitAbs = Math.abs(profitValue).toFixed(2);
-            const profitFormatted = `${profitSign} $${profitAbs}`;
-            const borderColor = isPositive ? '#6fcf97' : '#e06c75';
-            const displayName = record.itemName || "Без названия";
-            
-            html += `
-                <div class="history-item" style="border-left-color: ${borderColor};">
-                    <div class="history-main">
-                        <div class="history-item-name">
-                            <i class="fas fa-cube"></i> ${escapeHtml(displayName)}
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div class="history-profit" style="color: ${profitColor};">${profitFormatted}</div>
-                            <button class="delete-item-btn" data-id="${record.id}" title="Удалить запись"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                    </div>
-                    <div class="history-details">
-                        <span><i class="fas fa-shopping-cart"></i> Покупка: $${record.buy.toFixed(2)}</span>
-                        <span><i class="fas fa-arrow-right"></i> Продажа: $${record.sell.toFixed(2)}</span>
-                        <span><i class="fas fa-tools"></i> Расходы: $${record.expenses.toFixed(2)}</span>
-                        <span class="history-time"><i class="far fa-clock"></i> ${record.time}</span>
-                    </div>
-                </div>
-            `;
-        }
-        container.innerHTML = html;
-        
-        document.querySelectorAll('.delete-item-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = parseFloat(btn.getAttribute('data-id'));
-                if (!isNaN(id)) deleteHistoryItem(id);
-            });
-        });
+
+    // ДАННЫЕ
+    let dealsHistory = [];
+    let marketItems = [];
+    let soldItems = [];
+    let totalProfit = 0;
+
+    let dealsFilter = 'all';
+    let dealsStartDate = null;
+    let dealsEndDate = null;
+    let soldFilter = 'all';
+    let soldStartDate = null;
+    let soldEndDate = null;
+
+    const STORAGE_DEALS = "gta_deals";
+    const STORAGE_MARKET = "gta_market";
+    const STORAGE_SOLD = "gta_sold";
+    const STORAGE_PROFIT = "gta_profit";
+
+    function loadAllData() {
+        const savedDeals = localStorage.getItem(STORAGE_DEALS);
+        const savedMarket = localStorage.getItem(STORAGE_MARKET);
+        const savedSold = localStorage.getItem(STORAGE_SOLD);
+        const savedProfit = localStorage.getItem(STORAGE_PROFIT);
+        if (savedDeals) dealsHistory = JSON.parse(savedDeals);
+        if (savedMarket) marketItems = JSON.parse(savedMarket);
+        if (savedSold) soldItems = JSON.parse(savedSold);
+        if (savedProfit) totalProfit = parseFloat(savedProfit);
+        updateAllUI();
     }
-    
-    // ---------------------- ОСНОВНОЙ РАСЧЁТ (БЕЗ НАЛОГА) -------------------------
-    function calculate() {
-        let itemName = document.getElementById('itemName').value || "";
+
+    function saveAllData() {
+        localStorage.setItem(STORAGE_DEALS, JSON.stringify(dealsHistory));
+        localStorage.setItem(STORAGE_MARKET, JSON.stringify(marketItems));
+        localStorage.setItem(STORAGE_SOLD, JSON.stringify(soldItems));
+        localStorage.setItem(STORAGE_PROFIT, totalProfit);
+    }
+
+    // ФИЛЬТРАЦИЯ
+    function isDateInRange(itemDate, filter, startDate, endDate) {
+        const date = new Date(itemDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (filter === 'all') return true;
+        if (filter === 'today') return date.toDateString() === today.toDateString();
+        if (filter === 'week') {
+            const weekAgo = new Date();
+            weekAgo.setDate(today.getDate() - 7);
+            return date >= weekAgo;
+        }
+        if (filter === 'month') {
+            const monthAgo = new Date();
+            monthAgo.setMonth(today.getMonth() - 1);
+            return date >= monthAgo;
+        }
+        if (filter === 'custom' && startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59);
+            return date >= start && date <= end;
+        }
+        return true;
+    }
+
+    function setDealsDateFilter(filter) {
+        dealsFilter = filter;
+        if (filter !== 'custom') {
+            dealsStartDate = null;
+            dealsEndDate = null;
+            document.getElementById('dealsStartDate').value = '';
+            document.getElementById('dealsEndDate').value = '';
+        }
+        document.querySelectorAll('[data-filter-deals]').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.filterDeals === filter) btn.classList.add('active');
+        });
+        updateHistoryList();
+        playKeyboardSound();
+    }
+
+    function setDealsCustomDateRange() {
+        const start = document.getElementById('dealsStartDate').value;
+        const end = document.getElementById('dealsEndDate').value;
+        if (start && end) {
+            dealsStartDate = start;
+            dealsEndDate = end;
+            dealsFilter = 'custom';
+            document.querySelectorAll('[data-filter-deals]').forEach(btn => btn.classList.remove('active'));
+            updateHistoryList();
+        }
+    }
+
+    function resetDealsFilters() {
+        dealsFilter = 'all';
+        dealsStartDate = null;
+        dealsEndDate = null;
+        document.getElementById('dealsStartDate').value = '';
+        document.getElementById('dealsEndDate').value = '';
+        document.querySelectorAll('[data-filter-deals]').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('[data-filter-deals="all"]').classList.add('active');
+        updateHistoryList();
+        playKeyboardSound();
+    }
+
+    function setSoldDateFilter(filter) {
+        soldFilter = filter;
+        if (filter !== 'custom') {
+            soldStartDate = null;
+            soldEndDate = null;
+            document.getElementById('soldStartDate').value = '';
+            document.getElementById('soldEndDate').value = '';
+        }
+        document.querySelectorAll('[data-filter-sold]').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.filterSold === filter) btn.classList.add('active');
+        });
+        updateSoldList();
+        playKeyboardSound();
+    }
+
+    function setSoldCustomDateRange() {
+        const start = document.getElementById('soldStartDate').value;
+        const end = document.getElementById('soldEndDate').value;
+        if (start && end) {
+            soldStartDate = start;
+            soldEndDate = end;
+            soldFilter = 'custom';
+            document.querySelectorAll('[data-filter-sold]').forEach(btn => btn.classList.remove('active'));
+            updateSoldList();
+        }
+    }
+
+    function resetSoldFilters() {
+        soldFilter = 'all';
+        soldStartDate = null;
+        soldEndDate = null;
+        document.getElementById('soldStartDate').value = '';
+        document.getElementById('soldEndDate').value = '';
+        document.querySelectorAll('[data-filter-sold]').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('[data-filter-sold="all"]').classList.add('active');
+        updateSoldList();
+        playKeyboardSound();
+    }
+
+    // КАЛЬКУЛЯТОР
+    function calculateDeal() {
+        let name = document.getElementById('itemName').value || "Без названия";
         let buy = parseFloat(document.getElementById('buyPrice').value) || 0;
         let sell = parseFloat(document.getElementById('sellPrice').value) || 0;
         let expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        let profit = sell - buy - expenses;
         
-        // Формула без налога: чистая прибыль = продажа - покупка - расходы
-        let finalProfit = sell - buy - expenses;
-        
-        let resultElement = document.getElementById('resultValue');
-        if (finalProfit >= 0) {
-            resultElement.innerHTML = `+ $${finalProfit.toFixed(2)}`;
-            resultElement.style.color = "#6fcf97";
+        const resultElem = document.getElementById('resultValue');
+        if (profit >= 0) {
+            resultElem.innerHTML = `+ $${profit.toFixed(2)}`;
+            resultElem.style.color = "#6fcf97";
         } else {
-            resultElement.innerHTML = `- $${Math.abs(finalProfit).toFixed(2)}`;
-            resultElement.style.color = "#e06c75";
+            resultElem.innerHTML = `- $${Math.abs(profit).toFixed(2)}`;
+            resultElem.style.color = "#e06c75";
         }
         
-        let block = document.getElementById('resultBlock');
-        block.style.transform = "scale(1.02)";
-        setTimeout(() => block.style.transform = "scale(1)", 150);
+        totalProfit += profit;
         
-        addHistoryRecord(itemName, buy, sell, expenses, finalProfit);
-    }
-    
-    // Обработчик очистки истории
-    const clearBtn = document.getElementById('clearHistoryBtn');
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            if (confirm('🗑️ Очистить всю историю расчетов? Общая прибыль обнулится.')) {
-                clearHistory();
-                playEnterSound();
-            } else {
-                playKeyboardSound();
-            }
+        dealsHistory.unshift({
+            id: Date.now(), name: name, buy: buy, sell: sell, expenses: expenses, profit: profit, date: new Date().toLocaleString()
         });
+        if (dealsHistory.length > 50) dealsHistory.pop();
+        saveAllData();
+        updateTotalProfitDisplay();
+        updateHistoryList();
+        playEnterSound();
     }
-    
-    // Загружаем историю из LocalStorage
-    loadHistoryFromStorage();
-    
-    // Добавляем Enter на полях
-    const numberFields = ['buyPrice', 'sellPrice', 'expenses'];
-    numberFields.forEach(id => {
-        const field = document.getElementById(id);
-        if (field) {
-            field.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    calculate();
-                    playEnterSound();
-                }
-            });
+
+    // УДАЛЕНИЕ ЗАПИСЕЙ
+    function deleteDeal(id) {
+        const deal = dealsHistory.find(d => d.id === id);
+        if (deal) {
+            totalProfit -= deal.profit;
+            dealsHistory = dealsHistory.filter(d => d.id !== id);
+            saveAllData();
+            updateTotalProfitDisplay();
+            updateHistoryList();
+            playKeyboardSound();
         }
-    });
-    
-    // Для textarea: Ctrl+Enter = расчет
-    if (itemNameField) {
-        itemNameField.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                calculate();
-                playEnterSound();
-            }
-        });
     }
+
+    // ОЧИСТКА ВСЕЙ ИСТОРИИ - ПРОСТО ОБНУЛЯЕМ ПРИБЫЛЬ ДО 0
+    function clearAllDeals() {
+        if (confirm('🗑️ Удалить ВСЮ историю расчётов? Общая прибыль обнулится!')) {
+            dealsHistory = [];
+            totalProfit = 0;
+            saveAllData();
+            updateTotalProfitDisplay();
+            updateHistoryList();
+            playKeyboardSound();
+        }
+    }
+
+    function deleteSoldItem(id) {
+        const item = soldItems.find(s => s.id === id);
+        if (item) {
+            totalProfit -= item.price;
+            soldItems = soldItems.filter(s => s.id !== id);
+            saveAllData();
+            updateSoldList();
+            updateTotalProfitDisplay();
+            playKeyboardSound();
+        }
+    }
+
+    function clearAllSold() {
+        if (confirm('🗑️ Удалить ВСЕ проданные товары? Прибыль обнулится!')) {
+            soldItems = [];
+            totalProfit = 0;
+            saveAllData();
+            updateSoldList();
+            updateTotalProfitDisplay();
+            playKeyboardSound();
+        }
+    }
+
+    // МАРКЕТПЛЕЙС
+    function addMarketItem() {
+        const name = document.getElementById('marketItemName').value;
+        const price = parseFloat(document.getElementById('marketItemPrice').value);
+        const file = document.getElementById('marketItemImage').files[0];
+        if (!name || isNaN(price) || price <= 0) { alert('Введите название и цену'); return; }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            marketItems.push({ id: Date.now(), name: name, price: price, image: e.target.result || null, date: new Date().toLocaleString() });
+            document.getElementById('marketItemName').value = '';
+            document.getElementById('marketItemPrice').value = '';
+            document.getElementById('marketItemImage').value = '';
+            saveAllData();
+            updateMarketplaceGrid();
+            playKeyboardSound();
+        };
+        if (file) reader.readAsDataURL(file);
+        else reader.onload();
+    }
+
+    function sellMarketItem(id) {
+        const item = marketItems.find(i => i.id === id);
+        if (item) {
+            totalProfit += item.price;
+            soldItems.unshift({ id: Date.now(), name: item.name, price: item.price, date: new Date().toLocaleString() });
+            marketItems = marketItems.filter(i => i.id !== id);
+            if (soldItems.length > 50) soldItems.pop();
+            saveAllData();
+            updateMarketplaceGrid();
+            updateSoldList();
+            updateTotalProfitDisplay();
+            playEnterSound();
+        }
+    }
+
+    function removeMarketItem(id) {
+        if (confirm('Удалить товар без продажи?')) {
+            marketItems = marketItems.filter(i => i.id !== id);
+            saveAllData();
+            updateMarketplaceGrid();
+            playKeyboardSound();
+        }
+    }
+
+    // ОБНОВЛЕНИЕ UI
+    function updateTotalProfitDisplay() {
+        document.getElementById('totalProfitDisplay').innerHTML = `$${totalProfit.toLocaleString()}`;
+    }
+
+    function updateHistoryList() {
+        const historyDiv = document.getElementById('historyList');
+        const filtered = dealsHistory.filter(item => isDateInRange(item.date, dealsFilter, dealsStartDate, dealsEndDate));
+        
+        if (filtered.length === 0) {
+            historyDiv.innerHTML = '<div style="text-align:center; color:var(--text-secondary);">Нет расчётов за выбранный период</div>';
+        } else {
+            historyDiv.innerHTML = filtered.map(d => `
+                <div class="income-item">
+                    <div class="income-info">
+                        <span style="font-weight:bold;">${escapeHtml(d.name)}</span>
+                        <div style="font-size:11px;">${d.date}</div>
+                        <div style="font-size:11px;">Покупка: $${d.buy.toLocaleString()} | Продажа: $${d.sell.toLocaleString()} | Расходы: $${d.expenses.toLocaleString()}</div>
+                    </div>
+                    <div class="income-actions">
+                        <div style="color:${d.profit >= 0 ? '#6fcf97' : '#e06c75'}; font-weight:bold;">${d.profit >= 0 ? '+' : '-'} $${Math.abs(d.profit).toLocaleString()}</div>
+                        <button class="delete-btn" onclick="deleteDeal(${d.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function updateMarketplaceGrid() {
+        const marketDiv = document.getElementById('marketplaceGrid');
+        if (marketItems.length === 0) {
+            marketDiv.innerHTML = '<div style="text-align:center; color:var(--text-secondary); grid-column:1/-1;">Нет товаров. Добавьте выше!</div>';
+        } else {
+            marketDiv.innerHTML = marketItems.map(item => `
+                <div class="market-item">
+                    ${item.image ? `<img src="${item.image}" alt="${item.name}">` : '<div style="height:100px;background:#2a3450;border-radius:15px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="font-size:30px;color:#555"></i></div>'}
+                    <div style="font-weight:bold; margin-top:8px;">${escapeHtml(item.name)}</div>
+                    <div class="market-price">${item.price.toLocaleString()} $</div>
+                    <button class="sell-btn" onclick="sellMarketItem(${item.id})">💵 Продано</button>
+                    <button class="delete-btn" onclick="removeMarketItem(${item.id})">🗑️ Удалить</button>
+                </div>
+            `).join('');
+        }
+    }
+
+    function updateSoldList() {
+        const soldDiv = document.getElementById('soldList');
+        const filtered = soldItems.filter(item => isDateInRange(item.date, soldFilter, soldStartDate, soldEndDate));
+        
+        if (filtered.length === 0) {
+            soldDiv.innerHTML = '<div style="text-align:center; color:var(--text-secondary);">Нет продаж за выбранный период</div>';
+        } else {
+            soldDiv.innerHTML = filtered.map(s => `
+                <div class="income-item">
+                    <div class="income-info">
+                        <span style="color:var(--success); font-weight:bold;">+ ${s.price.toLocaleString()} $</span>
+                        <div style="font-size:11px;">${escapeHtml(s.name)}</div>
+                        <div style="font-size:10px;">${s.date}</div>
+                    </div>
+                    <div class="income-actions">
+                        <button class="delete-btn" onclick="deleteSoldItem(${s.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function updateAllUI() {
+        updateTotalProfitDisplay();
+        updateHistoryList();
+        updateMarketplaceGrid();
+        updateSoldList();
+    }
+
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+
+    // НАСТРОЙКИ
+    function setBackgroundColor(color) {
+        document.body.classList.remove('bg-black', 'bg-white', 'bg-green', 'bg-blue', 'bg-red', 'bg-purple', 'bg-orange', 'bg-pink');
+        document.body.classList.add(`bg-${color}`);
+        localStorage.setItem('bgColor', color);
+        document.querySelectorAll('#bgColorGrid .color-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`#bgColorGrid .color-btn[data-bg="${color}"]`).classList.add('active');
+    }
+
+    function setButtonColor(color) {
+        document.body.classList.remove('btn-orange', 'btn-green', 'btn-blue', 'btn-red', 'btn-purple', 'btn-cyan', 'btn-pink', 'btn-gold');
+        document.body.classList.add(`btn-${color}`);
+        localStorage.setItem('btnColor', color);
+        document.querySelectorAll('#btnColorGrid .color-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`#btnColorGrid .color-btn[data-btn="${color}"]`).classList.add('active');
+    }
+
+    // ИНИЦИАЛИЗАЦИЯ
+    const savedBg = localStorage.getItem('bgColor');
+    if (savedBg) setBackgroundColor(savedBg);
+    else setBackgroundColor('black');
     
-    // Демо-записи (примеры сделок без налога)
-    if (historyArray.length === 0) {
-        const demoDate = new Date();
-        const demoTime = `${demoDate.toLocaleDateString()} ${demoDate.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        const demoRecords = [
-            {
-                id: Date.now() + 1001,
-                itemName: "Бронеавтомобиль",
-                buy: 12500,
-                sell: 27800,
-                expenses: 350,
-                profit: 27800 - 12500 - 350,
-                time: demoTime,
-                timestamp: Date.now() - 3600000
-            },
-            {
-                id: Date.now() + 1002,
-                itemName: "Партия оружия",
-                buy: 45000,
-                sell: 38000,
-                expenses: 2200,
-                profit: 38000 - 45000 - 2200,
-                time: demoTime,
-                timestamp: Date.now() - 7200000
-            },
-            {
-                id: Date.now() + 1003,
-                itemName: "Наркотические вещества",
-                buy: 32000,
-                sell: 56000,
-                expenses: 1800,
-                profit: 56000 - 32000 - 1800,
-                time: demoTime,
-                timestamp: Date.now() - 86400000
-            },
-            {
-                id: Date.now() + 1004,
-                itemName: "Элитная техника",
-                buy: 86000,
-                sell: 112500,
-                expenses: 4300,
-                profit: 112500 - 86000 - 4300,
-                time: demoTime,
-                timestamp: Date.now() - 172800000
-            }
-        ];
-        historyArray.push(...demoRecords);
-        saveHistoryToStorage();
-        renderHistoryList();
-        updateTotalProfitUI();
+    const savedBtn = localStorage.getItem('btnColor');
+    if (savedBtn) setButtonColor(savedBtn);
+    else setButtonColor('orange');
+    
+    const savedVolume = localStorage.getItem('volume');
+    if (savedVolume) {
+        document.getElementById('volumeSlider').value = savedVolume;
+        setVolume(parseInt(savedVolume));
     } else {
-        updateTotalProfitUI();
+        setVolume(70);
     }
     
-    // Синхронизация при изменении localStorage из других вкладок
-    window.addEventListener('storage', (e) => {
-        if (e.key === STORAGE_KEY) {
-            loadHistoryFromStorage();
-        }
-    });
+    document.getElementById('volumeSlider').addEventListener('input', (e) => setVolume(parseInt(e.target.value)));
+    document.querySelectorAll('#bgColorGrid .color-btn').forEach(btn => btn.addEventListener('click', () => setBackgroundColor(btn.dataset.bg)));
+    document.querySelectorAll('#btnColorGrid .color-btn').forEach(btn => btn.addEventListener('click', () => setButtonColor(btn.dataset.btn)));
+    
+    document.body.addEventListener('click', () => initAudio());
+    loadAllData();
 </script>
 </body>
 </html>
